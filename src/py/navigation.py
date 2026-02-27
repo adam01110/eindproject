@@ -3,8 +3,6 @@ from pyodide.ffi import create_proxy
 from pyscript import document
 
 
-ACTIVE_CLASSES = ["border-slate-800", "bg-slate-800", "text-white", "shadow-sm"]
-BASE_TEXT_CLASS = "text-stone-700"
 DEFAULT_PAGE_ID = "page-1"
 
 
@@ -41,15 +39,9 @@ def set_active_navigation(active_page_id):
 
         if is_active:
             link.setAttribute("aria-current", "page")
-            for class_name in ACTIVE_CLASSES:
-                link.classList.add(class_name)
-            link.classList.remove(BASE_TEXT_CLASS)
         else:
             if link.hasAttribute("aria-current"):
                 link.removeAttribute("aria-current")
-            for class_name in ACTIVE_CLASSES:
-                link.classList.remove(class_name)
-            link.classList.add(BASE_TEXT_CLASS)
 
 
 def set_active_section(active_page_id):

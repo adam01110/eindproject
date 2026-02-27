@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Basecoat Single Page POC</title>
+        <link rel="stylesheet" href="./styles.css" />
+        <link
+            rel="stylesheet"
+            href="https://pyscript.net/releases/2026.1.1/core.css"
+        />
+        <script
+            type="module"
+            src="https://pyscript.net/releases/2026.1.1/core.js"
+        ></script>
+    </head>
+    <body class="min-h-screen">
+        <div class="grid min-h-screen md:grid-cols-[18rem_1fr]">
+            <aside
+                class="sidebar border-r"
+                data-side="left"
+                aria-hidden="false"
+            >
+                <nav aria-label="Sidebar navigation" class="h-full p-4">
+                    <header class="card">
+                        <section>
+                            <h2>Basecoat POC</h2>
+                            <p>Single page + PyScript navigation</p>
+                        </section>
+                    </header>
+
+                    <section class="scrollbar mt-4">
+                        <div role="group" aria-labelledby="sidebar-pages-label">
+                            <h3 id="sidebar-pages-label">Pages</h3>
+                            <ul>
+                                <li>
+                                    <a
+                                        data-nav-link
+                                        data-page-id="page-1"
+                                        data-page-label="Page 1"
+                                        href="#page-1"
+                                        >Page 1</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        data-nav-link
+                                        data-page-id="page-2"
+                                        data-page-label="Page 2"
+                                        href="#page-2"
+                                        >Page 2</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        data-nav-link
+                                        data-page-id="page-3"
+                                        data-page-label="Page 3"
+                                        href="#page-3"
+                                        >Page 3</a
+                                    >
+                                </li>
+                                <li>
+                                    <a
+                                        data-nav-link
+                                        data-page-id="page-4"
+                                        data-page-label="Page 4"
+                                        href="#page-4"
+                                        >Page 4</a
+                                    >
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                </nav>
+            </aside>
+
+            <main class="space-y-6 p-4 md:p-6">
+                <header class="space-y-1">
+                    <h1>Basecoat Components Proof of Concept</h1>
+                    <p class="text-slate-500">
+                        Current page: <span data-current-page>Page 1</span>
+                    </p>
+                </header>
+
+                <section id="page-1" data-page-section class="space-y-4">
+                    <!-- POC PAGE 1 START: remove this entire section to remove page-1 component examples -->
+                    <div data-poc-block="page-1-components" class="space-y-4">
+                        <div class="alert">
+                            <strong>POC block</strong>
+                            <section>
+                                <p>
+                                    Page 1 shows alert, badge, and button
+                                    components. Remove this block when finished.
+                                </p>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Alerts and Badges</h2>
+                                <p>Basecoat alert and badge variants.</p>
+                            </header>
+                            <section class="grid gap-3">
+                                <div class="alert-destructive" role="alert">
+                                    <strong>Destructive alert</strong>
+                                    <section>
+                                        <p>
+                                            This is a temporary destructive
+                                            alert example.
+                                        </p>
+                                    </section>
+                                </div>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="badge">Default</span>
+                                    <span class="badge-primary">Primary</span>
+                                    <span class="badge-secondary"
+                                        >Secondary</span
+                                    >
+                                    <span class="badge-destructive"
+                                        >Destructive</span
+                                    >
+                                    <span class="badge-outline">Outline</span>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Buttons</h2>
+                                <p>Basecoat button variants.</p>
+                            </header>
+                            <section class="flex flex-wrap gap-2">
+                                <button type="button" class="btn">
+                                    Default
+                                </button>
+                                <button type="button" class="btn-secondary">
+                                    Secondary
+                                </button>
+                                <button type="button" class="btn-destructive">
+                                    Destructive
+                                </button>
+                                <button type="button" class="btn-outline">
+                                    Outline
+                                </button>
+                                <button type="button" class="btn-ghost">
+                                    Ghost
+                                </button>
+                                <button type="button" class="btn-link">
+                                    Link
+                                </button>
+                            </section>
+                        </div>
+                    </div>
+                    <!-- POC PAGE 1 END -->
+                </section>
+
+                <section id="page-2" data-page-section class="hidden space-y-4">
+                    <!-- POC PAGE 2 START: remove this entire section to remove page-2 component examples -->
+                    <div data-poc-block="page-2-components" class="space-y-4">
+                        <div class="alert">
+                            <strong>POC block</strong>
+                            <section>
+                                <p>
+                                    Page 2 shows form, input, textarea, select,
+                                    radio, checkbox, and switch examples.
+                                </p>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Form Elements</h2>
+                                <p>
+                                    Basecoat form styles using native HTML
+                                    controls.
+                                </p>
+                            </header>
+                            <section>
+                                <form class="form grid gap-6">
+                                    <div class="grid gap-2">
+                                        <label for="poc-username"
+                                            >Username</label
+                                        >
+                                        <input
+                                            id="poc-username"
+                                            type="text"
+                                            placeholder="hunvreus"
+                                        />
+                                        <p class="text-sm text-slate-500">
+                                            Temporary sample input.
+                                        </p>
+                                    </div>
+
+                                    <div class="grid gap-2">
+                                        <label for="poc-email">Email</label>
+                                        <select id="poc-email">
+                                            <option value="one">
+                                                user@example.com
+                                            </option>
+                                            <option value="two">
+                                                user@school.com
+                                            </option>
+                                            <option value="three">
+                                                user@work.com
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="grid gap-2">
+                                        <label for="poc-bio">Bio</label>
+                                        <textarea
+                                            id="poc-bio"
+                                            rows="3"
+                                            placeholder="Write a short bio"
+                                        ></textarea>
+                                    </div>
+
+                                    <fieldset class="grid gap-2">
+                                        <legend>Notification preference</legend>
+                                        <label class="font-normal"
+                                            ><input
+                                                type="radio"
+                                                name="poc-notifications"
+                                                value="all"
+                                                checked
+                                            />
+                                            All updates</label
+                                        >
+                                        <label class="font-normal"
+                                            ><input
+                                                type="radio"
+                                                name="poc-notifications"
+                                                value="mentions"
+                                            />
+                                            Mentions only</label
+                                        >
+                                        <label class="font-normal"
+                                            ><input
+                                                type="radio"
+                                                name="poc-notifications"
+                                                value="none"
+                                            />
+                                            None</label
+                                        >
+                                    </fieldset>
+
+                                    <label class="font-normal"
+                                        ><input type="checkbox" /> Enable weekly
+                                        summary</label
+                                    >
+                                    <label class="font-normal"
+                                        ><input type="checkbox" role="switch" />
+                                        Enable switch example</label
+                                    >
+                                </form>
+                            </section>
+                        </div>
+                    </div>
+                    <!-- POC PAGE 2 END -->
+                </section>
+
+                <section id="page-3" data-page-section class="hidden space-y-4">
+                    <!-- POC PAGE 3 START: remove this entire section to remove page-3 component examples -->
+                    <div data-poc-block="page-3-components" class="space-y-4">
+                        <div class="alert">
+                            <strong>POC block</strong>
+                            <section>
+                                <p>
+                                    Page 3 shows breadcrumb, table, pagination,
+                                    and keyboard key examples.
+                                </p>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Breadcrumb and Kbd</h2>
+                                <p>
+                                    Simple breadcrumb composition and keyboard
+                                    keys.
+                                </p>
+                            </header>
+                            <section class="space-y-4">
+                                <ol
+                                    class="text-slate-500 flex flex-wrap items-center gap-1.5 text-sm sm:gap-2.5"
+                                >
+                                    <li
+                                        class="inline-flex items-center gap-1.5"
+                                    >
+                                        <a href="#" class="hover:text-slate-900"
+                                            >Home</a
+                                        >
+                                    </li>
+                                    <li aria-hidden="true">/</li>
+                                    <li
+                                        class="inline-flex items-center gap-1.5"
+                                    >
+                                        <a href="#" class="hover:text-slate-900"
+                                            >Components</a
+                                        >
+                                    </li>
+                                    <li aria-hidden="true">/</li>
+                                    <li class="text-slate-900 font-normal">
+                                        Table
+                                    </li>
+                                </ol>
+
+                                <p class="text-sm text-slate-500">
+                                    Shortcut example:
+                                    <kbd class="kbd">Ctrl</kbd> +
+                                    <kbd class="kbd">K</kbd>
+                                </p>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Table and Pagination</h2>
+                                <p>
+                                    Basecoat table class and pagination
+                                    composition.
+                                </p>
+                            </header>
+                            <section class="space-y-4">
+                                <div class="overflow-x-auto">
+                                    <table class="table">
+                                        <caption>
+                                            A temporary POC dataset.
+                                        </caption>
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Status</th>
+                                                <th>Owner</th>
+                                                <th class="text-right">
+                                                    Score
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-medium">
+                                                    POC-001
+                                                </td>
+                                                <td>Ready</td>
+                                                <td>Ada</td>
+                                                <td class="text-right">98</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-medium">
+                                                    POC-002
+                                                </td>
+                                                <td>Review</td>
+                                                <td>Linus</td>
+                                                <td class="text-right">87</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-medium">
+                                                    POC-003
+                                                </td>
+                                                <td>Blocked</td>
+                                                <td>Grace</td>
+                                                <td class="text-right">74</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <nav
+                                    role="navigation"
+                                    aria-label="pagination"
+                                    class="mx-auto flex w-full justify-center"
+                                >
+                                    <ul
+                                        class="flex flex-row items-center gap-1"
+                                    >
+                                        <li>
+                                            <a href="#" class="btn-ghost"
+                                                >Previous</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="#" class="btn-icon-outline"
+                                                >1</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="#" class="btn-icon-ghost"
+                                                >2</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="#" class="btn-icon-ghost"
+                                                >3</a
+                                            >
+                                        </li>
+                                        <li>
+                                            <a href="#" class="btn-ghost"
+                                                >Next</a
+                                            >
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </section>
+                        </div>
+                    </div>
+                    <!-- POC PAGE 3 END -->
+                </section>
+
+                <section id="page-4" data-page-section class="hidden space-y-4">
+                    <!-- POC PAGE 4 START: remove this entire section to remove page-4 component examples -->
+                    <div data-poc-block="page-4-components" class="space-y-4">
+                        <div class="alert">
+                            <strong>POC block</strong>
+                            <section>
+                                <p>
+                                    Page 4 shows avatar, card, progress-style
+                                    layout, and placeholder examples.
+                                </p>
+                            </section>
+                        </div>
+
+                        <div class="card">
+                            <header>
+                                <h2>POC: Avatar and Status</h2>
+                                <p>
+                                    Simple profile composition using Basecoat
+                                    classes.
+                                </p>
+                            </header>
+                            <section class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="avatar">
+                                        <img
+                                            src="https://github.com/hunvreus.png"
+                                            alt="Ronan"
+                                        />
+                                    </div>
+                                    <div class="avatar">
+                                        <img
+                                            src="https://github.com/shadcn.png"
+                                            alt="Shadcn"
+                                        />
+                                    </div>
+                                    <div class="avatar">
+                                        <img
+                                            src="https://github.com/adamwathan.png"
+                                            alt="Adam"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="relative h-2 w-full overflow-hidden rounded-full bg-slate-200"
+                                >
+                                    <div
+                                        class="h-full w-2/3 bg-slate-700"
+                                    ></div>
+                                </div>
+
+                                <div class="grid gap-2">
+                                    <div
+                                        class="h-4 w-2/3 rounded-md bg-slate-200"
+                                    ></div>
+                                    <div
+                                        class="h-4 w-1/2 rounded-md bg-slate-200"
+                                    ></div>
+                                </div>
+                            </section>
+                            <footer>
+                                <div class="button-group">
+                                    <button type="button" class="btn">
+                                        Approve
+                                    </button>
+                                    <button type="button" class="btn-outline">
+                                        Hold
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn-destructive"
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                    <!-- POC PAGE 4 END -->
+                </section>
+            </main>
+        </div>
+
+        <script type="py" src="./py/navigation.py"></script>
+    </body>
+</html>
