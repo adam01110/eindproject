@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workspace - Page 1</title>
+  <title>Workspace - Single Page</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -61,10 +61,10 @@
           </div>
 
           <nav aria-label="Sidebar navigation" class="mt-4 grid grid-cols-2 gap-2 md:grid-cols-1">
-            <a data-nav-link data-page-label="Page 1" href="./index.html" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 1</a>
-            <a data-nav-link data-page-label="Page 2" href="./page-2.html" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 2</a>
-            <a data-nav-link data-page-label="Page 3" href="./page-3.html" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 3</a>
-            <a data-nav-link data-page-label="Page 4" href="./page-4.html" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 4</a>
+            <a data-nav-link data-page-id="page-1" data-page-label="Page 1" href="#page-1" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 1</a>
+            <a data-nav-link data-page-id="page-2" data-page-label="Page 2" href="#page-2" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 2</a>
+            <a data-nav-link data-page-id="page-3" data-page-label="Page 3" href="#page-3" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 3</a>
+            <a data-nav-link data-page-id="page-4" data-page-label="Page 4" href="#page-4" class="rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-100">Page 4</a>
           </nav>
         </div>
       </aside>
@@ -75,7 +75,10 @@
           <h2 data-current-page class="mt-2 text-3xl font-semibold text-stone-900 md:text-4xl">Page 1</h2>
         </header>
 
-        <section class="h-[58vh] rounded-2xl border-2 border-dashed border-stone-300 bg-white/70"></section>
+        <section id="page-1" data-page-section class="h-[58vh] rounded-2xl border-2 border-dashed border-stone-300 bg-white/70"></section>
+        <section id="page-2" data-page-section class="hidden h-[58vh] rounded-2xl border-2 border-dashed border-stone-300 bg-white/70"></section>
+        <section id="page-3" data-page-section class="hidden h-[58vh] rounded-2xl border-2 border-dashed border-stone-300 bg-white/70"></section>
+        <section id="page-4" data-page-section class="hidden h-[58vh] rounded-2xl border-2 border-dashed border-stone-300 bg-white/70"></section>
       </main>
     </div>
   </div>
