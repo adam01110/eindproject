@@ -4,7 +4,11 @@
 	"description": "",
 	"keywords": [],
 	"license": "UNLICENSED",
-	"author": "adam01110",
+	"author": "adam01110 & iseloman-ops",
+	"contributors": [
+		"adam01110",
+		"iseloman-ops"
+	],
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
