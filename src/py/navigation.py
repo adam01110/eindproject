@@ -1,23 +1,20 @@
 import asyncio
 
-from pyscript import fetch, window
+from pyscript import fetch, web, when, window
 from pyscript.ffi import create_proxy
-from pyscript.web import page
+
+page = web.page
 
 DEFAULT_PAGE_ID = "page-1"
 PAGE_IDS = []
 HASH_CHANGE_PROXY = None
 
 
-def to_dom(node):
-    return getattr(node, "element", getattr(node, "_dom_element", node))
-
-
 def collect_page_ids():
     sections = page.find("[data-page-section]")
     page_ids = []
     for section in sections:
-        section_id = to_dom(section).getAttribute("id")
+        section_id = section.id
         if section_id:
             page_ids.append(section_id)
     return page_ids
@@ -38,41 +35,38 @@ def set_active_navigation(active_page_id):
     links = page.find("[data-nav-link]")
 
     for link in links:
-        link_dom = to_dom(link)
-        target_page = link_dom.getAttribute("data-page-id")
+        target_page = link.href.split("#")[-1] if "#" in link.href else ""
         is_active = target_page == active_page_id
 
         if is_active:
-            link_dom.setAttribute("aria-current", "page")
+            link.ariaCurrent = "page"
         else:
-            if link_dom.hasAttribute("aria-current"):
-                link_dom.removeAttribute("aria-current")
+            link.ariaCurrent = ""
 
 
 def set_active_section(active_page_id):
     sections = page.find("[data-page-section]")
 
     for section in sections:
-        section_dom = to_dom(section)
-        section_id = section_dom.getAttribute("id")
-        if section_id == active_page_id:
-            section_dom.removeAttribute("hidden")
-        else:
-            section_dom.setAttribute("hidden", "")
+        section.hidden = section.id != active_page_id
 
 
 def set_page_title(active_page_id):
     title_matches = page.find("[data-current-page]")
-    active_link_matches = page.find(f'[data-nav-link][data-page-id="{active_page_id}"]')
+    active_link_matches = page.find(f'[data-nav-link][href="#{active_page_id}"]')
 
     if not title_matches or not active_link_matches:
         return
 
-    title_dom = to_dom(title_matches[0])
-    active_link_dom = to_dom(active_link_matches[0])
-    active_label = active_link_dom.getAttribute("data-page-label")
+    title_node = title_matches[0]
+    active_label = active_link_matches[0].textContent
     if active_label:
-        title_dom.textContent = active_label
+        title_node.textContent = active_label
+
+
+@when("click", "[data-nav-link]")
+def on_navigation_click(_event):
+    render()
 
 
 def render(_event=None):
@@ -91,15 +85,14 @@ async def load_page_partials():
     sections = page.find("[data-page-section]")
 
     for section in sections:
-        section_dom = to_dom(section)
-        partial_path = section_dom.getAttribute("data-page-partial")
+        partial_path = f"./pages/{section.id}.html"
         if not partial_path:
             continue
 
         try:
             response = await fetch(partial_path)
             if response.ok:
-                section_dom.innerHTML = await response.text()
+                section.innerHTML = await response.text()
         except Exception:
             continue
 

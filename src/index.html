@@ -21,11 +21,40 @@
         <!-- Scripts -->
         <script
             type="py"
+            src="./py/loading.py"
+            config="./pyscript.json"
+        ></script>
+        <script
+            type="py"
             src="./py/navigation.py"
             config="./pyscript.json"
         ></script>
     </head>
     <body>
+        <div
+            id="pyscript-loading"
+            class="fixed bottom-4 left-1/2 z-50 -translate-x-1/2"
+            role="status"
+            aria-live="polite"
+        >
+            <span class="badge-secondary">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    class="size-3 animate-spin"
+                >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Loading python
+            </span>
+        </div>
+
         <div id="app-shell" class="[--sidebar-width:18rem]">
             <aside
                 id="app-sidebar"
@@ -34,13 +63,6 @@
                 aria-hidden="false"
             >
                 <nav aria-label="Sidebar navigation">
-                    <header class="card">
-                        <section>
-                            <h2>Basecoat POC</h2>
-                            <p>Single page + PyScript navigation</p>
-                        </section>
-                    </header>
-
                     <section class="scrollbar">
                         <div role="group" aria-labelledby="sidebar-pages-label">
                             <h3 id="sidebar-pages-label">Pages</h3>
@@ -87,7 +109,7 @@
                 </nav>
             </aside>
 
-            <main id="app-main" class="content-start space-y-6 p-4 md:!ml-0 md:p-6">
+            <main id="app-main" class="content-start space-y-6 p-4 md:p-6">
                 <header class="space-y-1">
                     <h1>Basecoat Components Proof of Concept</h1>
                     <p>Current page: <span data-current-page>Page 1</span></p>
