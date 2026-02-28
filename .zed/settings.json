@@ -4,11 +4,7 @@
 			"formatter": {
 				"external": {
 					"command": "biome",
-					"arguments": [
-						"format",
-						"--stdin-file-path",
-						"{buffer_path}"
-					]
+					"arguments": ["format", "--stdin-file-path", "{buffer_path}"]
 				}
 			},
 			"language_servers": [
