@@ -2,6 +2,7 @@
 	"name": "eindproject",
 	"version": "1.0.0",
 	"description": "",
+	"type": "module",
 	"keywords": [],
 	"license": "UNLICENSED",
 	"author": "adam01110 & iseloman-ops",
