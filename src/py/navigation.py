@@ -1,8 +1,7 @@
 import asyncio
 
-from js import window
-from pyodide.ffi import create_proxy
-from pyodide.http import pyfetch
+from pyscript import fetch, window
+from pyscript.ffi import create_proxy
 from pyscript.web import page
 
 DEFAULT_PAGE_ID = "page-1"
@@ -98,9 +97,9 @@ async def load_page_partials():
             continue
 
         try:
-            response = await pyfetch(partial_path)
+            response = await fetch(partial_path)
             if response.ok:
-                section_dom.innerHTML = await response.string()
+                section_dom.innerHTML = await response.text()
         except Exception:
             continue
 
