@@ -1,8 +1,13 @@
+import asyncio
+
 from js import window
 from pyodide.ffi import create_proxy
+from pyodide.http import pyfetch
 from pyscript.web import page
 
 DEFAULT_PAGE_ID = "page-1"
+PAGE_IDS = []
+HASH_CHANGE_PROXY = None
 
 
 def to_dom(node):
@@ -17,9 +22,6 @@ def collect_page_ids():
         if section_id:
             page_ids.append(section_id)
     return page_ids
-
-
-PAGE_IDS = collect_page_ids()
 
 
 def normalize_hash(hash_value):
@@ -86,6 +88,35 @@ def render(_event=None):
     set_page_title(active_page_id)
 
 
-hash_change_proxy = create_proxy(render)
-window.addEventListener("hashchange", hash_change_proxy)
-render()
+async def load_page_partials():
+    sections = page.find("[data-page-section]")
+
+    for section in sections:
+        section_dom = to_dom(section)
+        partial_path = section_dom.getAttribute("data-page-partial")
+        if not partial_path:
+            continue
+
+        try:
+            response = await pyfetch(partial_path)
+            if response.ok:
+                section_dom.innerHTML = await response.string()
+        except Exception:
+            continue
+
+
+def start():
+    global PAGE_IDS
+
+    PAGE_IDS = collect_page_ids()
+
+    global HASH_CHANGE_PROXY
+
+    HASH_CHANGE_PROXY = create_proxy(render)
+    window.addEventListener("hashchange", HASH_CHANGE_PROXY)
+
+    render()
+    asyncio.create_task(load_page_partials())
+
+
+start()
