@@ -1,0 +1,5 @@
+[[tool.ty.overrides]]
+include = ["src/py/**"]
+
+[tool.ty.overrides.analysis]
+allowed-unresolved-imports = ["js", "pyodide.**", "pyscript.**"]

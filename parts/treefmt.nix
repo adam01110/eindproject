@@ -7,7 +7,9 @@
 
       settings.global.excludes = [
         ".direnv/*"
-        ".node_modules/*"
+        ".rumdl_cache/*"
+        "node_modules/*"
+        "dist/*"
       ];
 
       programs = {
@@ -16,7 +18,11 @@
         deadnix.enable = true;
         statix.enable = true;
 
-        biome.enable = true;
+        biome = {
+          enable = true;
+          validate.enable = false;
+          settings.css.parser.tailwindDirectives = true;
+        };
       };
     };
   };

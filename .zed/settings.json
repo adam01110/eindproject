@@ -1,13 +1,43 @@
 {
-  "lsp": {
-    "vscode-css-language-server": {
-      "settings": {
-        "css": {
-          "lint": {
-            "unknownAtRules": "ignore"
-          }
-        }
-      }
-    }
-  }
+	"languages": {
+		"CSS": {
+			"formatter": {
+				"external": {
+					"command": "biome",
+					"arguments": [
+						"format",
+						"--stdin-file-path",
+						"{buffer_path}"
+					]
+				}
+			},
+			"language_servers": [
+				"vscode-css-language-server",
+				"tailwindcss-language-server",
+				"!biome"
+			]
+		}
+	},
+	"lsp": {
+		"biome": {
+			"settings": {
+				"inline_config": {
+					"css": {
+						"parser": {
+							"tailwindDirectives": true
+						}
+					}
+				}
+			}
+		},
+		"vscode-css-language-server": {
+			"settings": {
+				"css": {
+					"lint": {
+						"unknownAtRules": "ignore"
+					}
+				}
+			}
+		}
+	}
 }

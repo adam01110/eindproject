@@ -12,38 +12,23 @@ Follow these repo-specific rules in addition to system-level instructions.
 - PostCSS config: `postcss.config.ts`.
 - Package manager: Bun is preferred (`bun.lock` is committed).
 
-## 2) Rule Files Audit (Cursor/Copilot)
-Checked paths:
-- `.cursor/rules/` -> not present
-- `.cursorrules` -> not present
-- `.github/copilot-instructions.md` -> not present
-Implication:
-- There are currently no repo-local Cursor/Copilot instruction files.
-- Treat this `AGENTS.md` as the canonical local agent guide.
+## 2) MCP / Docs Tooling Rules
+- Always use Context7 for library/framework work in this repo,
+  especially for:
+  - PyScript
+  - Basecoat
+  - Tailwind CSS
+  - Vite/PostCSS config patterns when relevant
+- Treat Context7 as the primary docs source for implementation decisions;
+  use generic web search only as a secondary fallback.
+- Always use the Nix MCP for Nix-related work (flake files, Nix packages,
+  options, channels, Home Manager, nix-darwin concerns).
 
 ## 3) Build / Lint / Test Commands
-### Setup
-```bash
-bun install
-```
-### Development
-```bash
-bun run dev
-```
-### Production Build
-```bash
-bun run build
-```
-### Preview Built Output
-```bash
-bun run preview
-```
+For setup/development/build/preview commands, read `package.json`
+scripts directly and use them as the source of truth.
 
-### Lint / Format Status
-Current status:
-- No dedicated `lint` script exists in `package.json`.
-- Canonical lint/format command is Nix-based (`nix fmt`).
-
+### Lint / Format
 Lint/format command for this repo:
 ```bash
 # Run repository linting/formatting via treefmt
