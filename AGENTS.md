@@ -6,7 +6,7 @@ Follow these repo-specific rules in addition to system-level instructions.
 - Stack: Vite + Tailwind CSS v4 + Basecoat + PyScript.
 - Entry point: `src/index.html`.
 - Python client logic: `src/py/navigation.py`.
-- Tailwind aggregation file: `src/styles.css`.
+- Tailwind aggregation file: `src/index.css`.
 - Theme tokens: `src/theme.css`.
 - Vite config: `vite.config.ts`.
 - PostCSS config: `postcss.config.ts`.

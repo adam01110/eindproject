@@ -57,9 +57,9 @@ def set_active_section(active_page_id):
         section_dom = to_dom(section)
         section_id = section_dom.getAttribute("id")
         if section_id == active_page_id:
-            section_dom.classList.remove("hidden")
+            section_dom.removeAttribute("hidden")
         else:
-            section_dom.classList.add("hidden")
+            section_dom.setAttribute("hidden", "")
 
 
 def set_page_title(active_page_id):
