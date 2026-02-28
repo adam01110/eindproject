@@ -2,3 +2,4 @@
 .rumdl_cache
 node_modules
 dist
+src/py/__pycache__
