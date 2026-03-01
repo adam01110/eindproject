@@ -11,6 +11,7 @@ _: {
             (pkgs)
             bun
             codex
+            tokei
             ;
         };
 

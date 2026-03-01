@@ -1,22 +1,14 @@
 from pyscript import web, when, window
 
-page = web.page
-
 DEFAULT_THEME = "dark"
 THEME_STORAGE_KEY = "theme"
-CURRENT_THEME = DEFAULT_THEME
-
-
-def normalize_theme(theme_value):
-    if theme_value in {"light", "dark"}:
-        return theme_value
-    return DEFAULT_THEME
 
 
 def apply_theme(theme_value):
-    root = window.document.documentElement
-    if root is None:
+    root_matches = web.page.find("html")
+    if not root_matches:
         return
+    root = root_matches[0]
 
     if theme_value == "dark":
         root.classList.add("dark")
@@ -30,7 +22,7 @@ def read_saved_theme():
     except Exception:
         return DEFAULT_THEME
 
-    return normalize_theme(saved_theme)
+    return saved_theme if saved_theme == "light" else "dark"
 
 
 def save_theme(theme_value):
@@ -41,7 +33,7 @@ def save_theme(theme_value):
 
 
 def update_theme_toggle(theme_value):
-    toggle_matches = page.find("[data-theme-toggle]")
+    toggle_matches = web.page.find("[data-theme-toggle]")
     if not toggle_matches:
         return
 
@@ -49,18 +41,21 @@ def update_theme_toggle(theme_value):
     if theme_value == "dark":
         toggle_node.ariaPressed = "true"
         toggle_node.ariaLabel = "Switch to light mode"
-        toggle_node.innerHTML = '<i class="icon-[tabler--moon] inline-block" aria-hidden="true"></i>'
+        toggle_node.innerHTML = (
+            '<i class="icon-[tabler--moon] inline-block" aria-hidden="true"></i>'
+        )
     else:
         toggle_node.ariaPressed = "false"
         toggle_node.ariaLabel = "Switch to dark mode"
-        toggle_node.innerHTML = '<i class="icon-[tabler--sun] inline-block" aria-hidden="true"></i>'
+        toggle_node.innerHTML = (
+            '<i class="icon-[tabler--sun] inline-block" aria-hidden="true"></i>'
+        )
 
 
 def set_theme(theme_value):
-    global CURRENT_THEME
-
-    normalized_theme = normalize_theme(theme_value)
-    CURRENT_THEME = normalized_theme
+    normalized_theme = (
+        theme_value if theme_value in {"light", "dark"} else DEFAULT_THEME
+    )
     apply_theme(normalized_theme)
     save_theme(normalized_theme)
     update_theme_toggle(normalized_theme)
@@ -68,12 +63,8 @@ def set_theme(theme_value):
 
 @when("click", "[data-theme-toggle]")
 def on_theme_toggle_click(_event):
-    next_theme = "light" if CURRENT_THEME == "dark" else "dark"
+    next_theme = "light" if read_saved_theme() == "dark" else "dark"
     set_theme(next_theme)
 
 
-def start():
-    set_theme(read_saved_theme())
-
-
-start()
+set_theme(read_saved_theme())
