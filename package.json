@@ -1,25 +1,28 @@
 {
 	"name": "eindproject",
 	"version": "1.0.0",
-	"description": "",
-	"type": "module",
-	"keywords": [],
-	"license": "UNLICENSED",
 	"author": "adam01110 & iseloman-ops",
 	"contributors": [
 		"adam01110",
 		"iseloman-ops"
 	],
+	"description": "",
+	"keywords": [],
+	"license": "UNLICENSED",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview"
 	},
+	"type": "module",
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.2.1",
 		"basecoat-css": "^0.3.11",
 		"tailwindcss": "^4.2.1",
 		"tsx": "^4.21.0",
 		"vite": "^7.3.1"
+	},
+	"dependencies": {
+		"@tabler/icons-webfont": "^3.37.1"
 	}
 }
