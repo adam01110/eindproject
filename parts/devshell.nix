@@ -9,9 +9,15 @@ _: {
         packages = attrValues {
           inherit
             (pkgs)
+            alejandra
+            biome
             bun
             codex
+            nixd
+            ruff
+            tailwindcss-language-server
             tokei
+            vscode-langservers-extracted
             ;
         };
 
