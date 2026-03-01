@@ -4,6 +4,7 @@ Follow these repo-specific rules in addition to system-level instructions.
 
 ## 1) Project Snapshot
 - Stack: Vite + Tailwind CSS v4 + Basecoat + PyScript.
+- Icons: Iconify Tailwind plugin with Tabler icon set (`@iconify/tailwind4` + `@iconify-json/tabler`).
 - Entry point: `src/index.html`.
 - Python client logic: `src/py/navigation.py`.
 - Tailwind aggregation file: `src/index.css`.
@@ -98,6 +99,9 @@ If a test framework is later added:
 ### HTML / Tailwind / Basecoat
 - Prefer Basecoat component classes for component structure.
 - Use Tailwind utilities for spacing/layout tweaks.
+- Use Iconify Tabler classes for icons: `icon-[tabler--icon-name]`.
+- Do not use legacy Tabler webfont classes (`ti ti-*`) or `@tabler/icons-webfont`.
+- Do not inline SVG icons unless explicitly requested.
 - Keep theme tokens in `src/theme.css`.
 - Do not inline `<style>` blocks for new feature work.
 - Do not hardcode one-off colors when token-based alternatives exist.
@@ -121,7 +125,6 @@ If a test framework is later added:
 
 ## 6) Editing and Change Scope Rules
 - Make focused changes; avoid unrelated refactors.
-- Preserve the POC marker comments in `src/index.html` unless asked to remove.
 - When adding components, keep them clearly removable.
 - Keep paths rooted under `src/` for app code.
 - Do not reintroduce legacy root `index.html` or root `py/` app logic.

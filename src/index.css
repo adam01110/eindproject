@@ -2,3 +2,5 @@
 @import "basecoat-css";
 @import "./theme.css";
 @plugin "@iconify/tailwind4";
+
+@source not "../AGENTS.md";
