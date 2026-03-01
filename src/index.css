@@ -1,8 +1,4 @@
-/* Tailwind*/
 @import "tailwindcss";
-
-/* Basecoat */
 @import "basecoat-css";
-
-/* Theme */
 @import "./theme.css";
+@plugin "@iconify/tailwind4";
