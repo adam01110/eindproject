@@ -25,11 +25,7 @@
         ruff-format.enable = true;
 
         # JavaScript / CSS / JSON
-        biome = {
-          enable = true;
-          validate.enable = false;
-          settings.css.parser.tailwindDirectives = true;
-        };
+        biome.enable = true;
       };
     };
   };

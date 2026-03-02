@@ -1,5 +1,6 @@
 from pyscript import web, when, window
 from pyscript.ffi import create_proxy
+from sidebar import close_sidebar_on_mobile, set_sidebar_state, setup_sidebar_behavior
 
 DEFAULT_PAGE_ID = "page-1"
 PAGE_IDS = []
@@ -62,7 +63,18 @@ def set_page_title(active_page_id):
 
 @when("click", "[data-nav-link]")
 def on_navigation_click(_event):
+    close_sidebar_on_mobile()
     render()
+
+
+@when("click", "[data-sidebar-open]")
+def on_sidebar_open_click(_event):
+    set_sidebar_state(True)
+
+
+@when("click", "[data-sidebar-collapse]")
+def on_sidebar_collapse_click(_event):
+    set_sidebar_state(False)
 
 
 def render(_event=None):
@@ -86,6 +98,8 @@ def start():
 
     HASH_CHANGE_PROXY = create_proxy(render)
     window.addEventListener("hashchange", HASH_CHANGE_PROXY)
+
+    setup_sidebar_behavior()
 
     render()
 
