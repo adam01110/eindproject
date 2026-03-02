@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark overflow-x-clip">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,10 +33,10 @@
         ></py-script>
         <py-script src="./py/theme.py" config="../pyscript.json"></py-script>
     </head>
-    <body>
+    <body class="overflow-x-clip">
         <div
             id="pyscript-loading"
-            class="fixed bottom-2 left-1/2"
+            class="fixed bottom-2 left-1/2 -translate-x-1/2"
             role="status"
             aria-live="polite"
         >
@@ -150,6 +150,7 @@
                         data-theme-toggle
                         aria-pressed="true"
                         aria-label="Switch to light mode"
+                        data-tooltip="Switch to light mode"
                     >
                         <i
                             class="icon-[tabler--moon] inline-block"

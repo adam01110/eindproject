@@ -3,7 +3,6 @@ from pyscript import web, when, window
 DEFAULT_THEME = "dark"
 THEME_STORAGE_KEY = "theme"
 
-
 def apply_theme(theme_value):
     root_matches = web.page.find("html")
     if not root_matches:
@@ -41,12 +40,14 @@ def update_theme_toggle(theme_value):
     if theme_value == "dark":
         toggle_node.ariaPressed = "true"
         toggle_node.ariaLabel = "Switch to light mode"
+        toggle_node.dataset.tooltip = "Switch to light mode"
         toggle_node.innerHTML = (
             '<i class="icon-[tabler--moon] inline-block" aria-hidden="true"></i>'
         )
     else:
         toggle_node.ariaPressed = "false"
         toggle_node.ariaLabel = "Switch to dark mode"
+        toggle_node.dataset.tooltip = "Switch to dark mode"
         toggle_node.innerHTML = (
             '<i class="icon-[tabler--sun] inline-block" aria-hidden="true"></i>'
         )

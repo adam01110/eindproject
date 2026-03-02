@@ -1,12 +1,9 @@
-import asyncio
-
-from pyscript import fetch, web, when, window
+from pyscript import web, when, window
 from pyscript.ffi import create_proxy
 
 DEFAULT_PAGE_ID = "page-1"
 PAGE_IDS = []
 HASH_CHANGE_PROXY = None
-PARTIAL_HTML_CACHE = {}
 
 
 def collect_page_ids():
@@ -80,47 +77,6 @@ def render(_event=None):
     set_page_title(active_page_id)
 
 
-async def load_page_partials():
-    sections = web.page.find("[data-page-section]")
-
-    tasks = []
-
-    for section in sections:
-        partial_path = section.getAttribute("data-page-partial")
-        if partial_path:
-            partial_path = partial_path.strip()
-
-        if not partial_path:
-            section_id = section.id or ""
-            if not section_id:
-                continue
-            partial_path = f"./pages/{section_id}.html"
-
-        tasks.append(load_section_partial(section, partial_path))
-
-    if not tasks:
-        return
-
-    await asyncio.gather(*tasks, return_exceptions=True)
-
-
-async def load_section_partial(section, partial_path):
-    if partial_path in PARTIAL_HTML_CACHE:
-        section.innerHTML = PARTIAL_HTML_CACHE[partial_path]
-        return
-
-    try:
-        response = await fetch(partial_path)
-        if not response.ok:
-            return
-
-        html = await response.text()
-        PARTIAL_HTML_CACHE[partial_path] = html
-        section.innerHTML = html
-    except Exception:
-        return
-
-
 def start():
     global PAGE_IDS
 
@@ -132,7 +88,6 @@ def start():
     window.addEventListener("hashchange", HASH_CHANGE_PROXY)
 
     render()
-    asyncio.create_task(load_page_partials())
 
 
 start()

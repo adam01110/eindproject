@@ -21,6 +21,6 @@
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = import systems;
-      imports = [(inputs.import-tree ./parts)];
+      imports = [(inputs.import-tree ./src/nix)];
     };
 }
