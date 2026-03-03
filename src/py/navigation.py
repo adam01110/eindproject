@@ -1,6 +1,5 @@
 from pyscript import web, when, window
 from pyscript.ffi import create_proxy
-from sidebar import close_sidebar_on_mobile, set_sidebar_state, setup_sidebar_behavior
 
 DEFAULT_PAGE_ID = "page-1"
 PAGE_IDS = []
