@@ -80,66 +80,76 @@
 
                     <section class="scrollbar flex-1">
                         <div role="group" aria-labelledby="sidebar-pages-label">
-                            <h3 id="sidebar-pages-label">Pages</h3>
                             <ul>
                                 <li>
                                     <a
-                                        class="gap-2 px-3 py-2"
+                                        class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-1"
-                                        data-page-label="Page 1"
+                                        data-page-label="Home"
                                         href="#page-1"
                                     >
                                         <i
                                             class="icon-[tabler--home] size-4"
                                             aria-hidden="true"
                                         ></i>
-                                        Page 1
+                                        <span class="flex-1 truncate"
+                                            >Home</span
+                                        >
                                     </a>
                                 </li>
+                            </ul>
+                            <h3 id="sidebar-pages-label">Tools</h3>
+                            <ul>
                                 <li>
                                     <a
-                                        class="gap-2 px-3 py-2"
+                                        class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-2"
-                                        data-page-label="Page 2"
+                                        data-page-label="lineaire vergelijking"
                                         href="#page-2"
                                     >
                                         <i
                                             class="icon-[tabler--apps] size-4"
                                             aria-hidden="true"
                                         ></i>
-                                        Page 2
+                                        <span class="flex-1 truncate"
+                                            >lineaire vergelijking</span
+                                        >
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        class="gap-2 px-3 py-2"
+                                        class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-3"
-                                        data-page-label="Page 3"
+                                        data-page-label="cijfer calculator"
                                         href="#page-3"
                                     >
                                         <i
                                             class="icon-[tabler--file-text] size-4"
                                             aria-hidden="true"
                                         ></i>
-                                        Page 3
+                                        <span class="flex-1 truncate"
+                                            >cijfer calculator</span
+                                        >
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        class="gap-2 px-3 py-2"
+                                        class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-4"
-                                        data-page-label="Page 4"
+                                        data-page-label="percentage calculator"
                                         href="#page-4"
                                     >
                                         <i
                                             class="icon-[tabler--settings] size-4"
                                             aria-hidden="true"
                                         ></i>
-                                        Page 4
+                                        <span class="flex-1 truncate"
+                                            >percentage calculator</span
+                                        >
                                     </a>
                                 </li>
                             </ul>
@@ -172,9 +182,6 @@
                                 aria-hidden="true"
                             ></i>
                         </button>
-                        <p>
-                            Current page: <span data-current-page>Page 1</span>
-                        </p>
                     </div>
 
                     <button
@@ -195,27 +202,27 @@
                 <section
                     id="page-1"
                     data-page-section
-                    data-page-partial="./pages/page-1.html"
+                    data-page-partial="./pages/home.html"
                 ></section>
 
                 <section
                     id="page-2"
                     data-page-section
-                    data-page-partial="./pages/page-2.html"
+                    data-page-partial="./pages/lineaire-vergelijking.html"
                     hidden
                 ></section>
 
                 <section
                     id="page-3"
                     data-page-section
-                    data-page-partial="./pages/page-3.html"
+                    data-page-partial="./pages/cijfercalculator.html"
                     hidden
                 ></section>
 
                 <section
                     id="page-4"
                     data-page-section
-                    data-page-partial="./pages/page-4.html"
+                    data-page-partial="./pages/percentagecalculator.html"
                     hidden
                 ></section>
             </main>

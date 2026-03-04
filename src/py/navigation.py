@@ -62,18 +62,18 @@ def set_page_title(active_page_id):
 
 @when("click", "[data-nav-link]")
 def on_navigation_click(_event):
-    close_sidebar_on_mobile()
+    close_sidebar_on_mobile()  # ty:ignore[unresolved-reference]  # noqa: F821
     render()
 
 
 @when("click", "[data-sidebar-open]")
 def on_sidebar_open_click(_event):
-    set_sidebar_state(True)
+    set_sidebar_state(True)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 @when("click", "[data-sidebar-collapse]")
 def on_sidebar_collapse_click(_event):
-    set_sidebar_state(False)
+    set_sidebar_state(False)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def render(_event=None):
@@ -98,7 +98,7 @@ def start():
     HASH_CHANGE_PROXY = create_proxy(render)
     window.addEventListener("hashchange", HASH_CHANGE_PROXY)
 
-    setup_sidebar_behavior()
+    setup_sidebar_behavior()  # ty:ignore[unresolved-reference]  # noqa: F821
 
     render()
 
