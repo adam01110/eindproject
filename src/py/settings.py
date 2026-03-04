@@ -3,6 +3,7 @@ from pyscript.ffi import create_proxy
 
 KEYDOWN_PROXY = None
 
+
 def set_menu_open(is_open):
     trigger = get("sidebar-settings-menu-trigger")  # ty:ignore[unresolved-reference]  # noqa: F821
     popover = get("sidebar-settings-menu-popover")  # ty:ignore[unresolved-reference]  # noqa: F821

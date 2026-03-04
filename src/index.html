@@ -27,8 +27,8 @@
         <script type="module" src="./ts/basecoat.ts"></script>
 
         <!-- Scripts -->
-        <py-script src="./py/loading.py" config="../pyscript.json"></py-script>
         <py-script src="./py/lib.py" config="../pyscript.json"></py-script>
+        <py-script src="./py/loading.py" config="../pyscript.json"></py-script>
         <py-script src="./py/sidebar.py" config="../pyscript.json"></py-script>
         <py-script
             src="./py/navigation.py"
@@ -65,7 +65,9 @@
                     class="flex h-full flex-col"
                     aria-label="Sidebar navigation"
                 >
-                    <div class="flex justify-start px-3 pt-3">
+                    <div
+                        class="flex items-center justify-start gap-2 px-3 pt-3"
+                    >
                         <button
                             type="button"
                             class="btn-outline h-8 w-8 p-0"
@@ -79,6 +81,15 @@
                                 aria-hidden="true"
                             ></i>
                         </button>
+                        <p
+                            class="hidden items-center gap-1 text-xs opacity-70 md:flex"
+                        >
+                            <i
+                                class="icon-[tabler--git-commit] inline-block"
+                                aria-hidden="true"
+                            ></i>
+                            <span>__GIT_COMMIT_HASH__</span>
+                        </p>
                     </div>
 
                     <section class="scrollbar flex-1">
@@ -159,55 +170,70 @@
                         </div>
                     </section>
 
-                    <div class="mx-3 mb-3 mt-auto flex items-center gap-2">
-                        <article class="card min-w-0 flex-1 rounded-md p-0">
-                            <section class="p-0">
-                                <h2 class="m-0 px-3 py-2 text-sm leading-tight">
-                                    Eindproject
-                                </h2>
-                            </section>
-                        </article>
-
-                        <div id="sidebar-settings-menu" class="popover">
-                            <button
-                                type="button"
-                                id="sidebar-settings-menu-trigger"
-                                aria-haspopup="dialog"
-                                aria-controls="sidebar-settings-panel"
-                                aria-expanded="false"
-                                aria-label="Open settings"
-                                class="btn-icon-outline"
-                            >
-                                <i
-                                    class="icon-[tabler--settings]"
-                                    aria-hidden="true"
-                                ></i>
-                            </button>
-                            <div
-                                id="sidebar-settings-menu-popover"
-                                data-popover
+                    <div class="mt-auto px-3 pb-3">
+                        <p
+                            class="flex items-center justify-center gap-1 pb-2 text-xs opacity-70 md:hidden"
+                        >
+                            <i
+                                class="icon-[tabler--git-commit] inline-block"
                                 aria-hidden="true"
-                                data-side="right"
-                                data-align="end"
-                                style="margin-left: 1.25rem"
-                            >
+                            ></i>
+                            <span>__GIT_COMMIT_HASH__</span>
+                        </p>
+
+                        <div class="flex items-center gap-2">
+                            <article class="card min-w-0 flex-1 rounded-md p-0">
+                                <section class="p-0">
+                                    <h2
+                                        class="m-0 px-3 py-2 text-sm leading-tight"
+                                    >
+                                        Eindproject
+                                    </h2>
+                                </section>
+                            </article>
+
+                            <div id="sidebar-settings-menu" class="popover">
+                                <button
+                                    type="button"
+                                    id="sidebar-settings-menu-trigger"
+                                    aria-haspopup="dialog"
+                                    aria-controls="sidebar-settings-panel"
+                                    aria-expanded="false"
+                                    aria-label="Open settings"
+                                    class="btn-icon-outline"
+                                >
+                                    <i
+                                        class="icon-[tabler--settings]"
+                                        aria-hidden="true"
+                                    ></i>
+                                </button>
                                 <div
-                                    id="sidebar-settings-panel"
-                                    aria-labelledby="sidebar-settings-menu-trigger"
+                                    id="sidebar-settings-menu-popover"
+                                    data-popover
+                                    aria-hidden="true"
+                                    data-side="right"
+                                    data-align="end"
+                                    style="margin-left: 1.25rem"
                                 >
                                     <div
-                                        role="group"
-                                        class="field"
-                                        data-orientation="horizontal"
+                                        id="sidebar-settings-panel"
+                                        aria-labelledby="sidebar-settings-menu-trigger"
                                     >
-                                        <label for="settings-placeholder-toggle"
-                                            >Placeholder</label
+                                        <div
+                                            role="group"
+                                            class="field"
+                                            data-orientation="horizontal"
                                         >
-                                        <input
-                                            id="settings-placeholder-toggle"
-                                            type="checkbox"
-                                            role="switch"
-                                        />
+                                            <label
+                                                for="settings-placeholder-toggle"
+                                                >Placeholder</label
+                                            >
+                                            <input
+                                                id="settings-placeholder-toggle"
+                                                type="checkbox"
+                                                role="switch"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

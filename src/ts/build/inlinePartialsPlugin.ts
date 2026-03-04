@@ -17,7 +17,8 @@ export const createInlinePartialsPlugin = (srcRootPath: string): Plugin => ({
 		let transformedHtml = html;
 
 		for (const match of matches) {
-			const [fullMatch, openingTag, partialPath, _innerContent, closingTag] = match;
+			const [fullMatch, openingTag, partialPath, _innerContent, closingTag] =
+				match;
 			if (!partialPath) {
 				continue;
 			}

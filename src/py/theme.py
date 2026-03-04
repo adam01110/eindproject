@@ -1,13 +1,13 @@
-from pyscript import web, when, window
+from pyscript import when, window
 
 DEFAULT_THEME = "dark"
 THEME_STORAGE_KEY = "theme"
 
+
 def apply_theme(theme_value):
-    root_matches = web.page.find("html")
-    if not root_matches:
+    root = first("html")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not root:
         return
-    root = root_matches[0]
 
     if theme_value == "dark":
         root.classList.add("dark")
@@ -32,11 +32,9 @@ def save_theme(theme_value):
 
 
 def update_theme_toggle(theme_value):
-    toggle_matches = web.page.find("[data-theme-toggle]")
-    if not toggle_matches:
+    toggle_node = first("[data-theme-toggle]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not toggle_node:
         return
-
-    toggle_node = toggle_matches[0]
     if theme_value == "dark":
         toggle_node.ariaPressed = "true"
         toggle_node.ariaLabel = "Switch to light mode"

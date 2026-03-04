@@ -1,4 +1,4 @@
-from pyscript import web, when, window
+from pyscript import when, window
 from pyscript.ffi import create_proxy
 
 DEFAULT_PAGE_ID = "page-1"
@@ -7,7 +7,7 @@ HASH_CHANGE_PROXY = None
 
 
 def collect_page_ids():
-    sections = web.page.find("[data-page-section]")
+    sections = find("[data-page-section]")  # ty:ignore[unresolved-reference]  # noqa: F821
     page_ids = []
     for section in sections:
         section_id = section.id
@@ -28,7 +28,7 @@ def normalize_hash(hash_value):
 
 
 def set_active_navigation(active_page_id):
-    links = web.page.find("[data-nav-link]")
+    links = find("[data-nav-link]")  # ty:ignore[unresolved-reference]  # noqa: F821
 
     for link in links:
         target_page = link.href.split("#")[-1] if "#" in link.href else ""
@@ -41,21 +41,20 @@ def set_active_navigation(active_page_id):
 
 
 def set_active_section(active_page_id):
-    sections = web.page.find("[data-page-section]")
+    sections = find("[data-page-section]")  # ty:ignore[unresolved-reference]  # noqa: F821
 
     for section in sections:
         section.hidden = section.id != active_page_id
 
 
 def set_page_title(active_page_id):
-    title_matches = web.page.find("[data-current-page]")
-    active_link_matches = web.page.find(f'[data-nav-link][href="#{active_page_id}"]')
+    title_node = first("[data-current-page]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    active_link = first(f'[data-nav-link][href="#{active_page_id}"]')  # ty:ignore[unresolved-reference]  # noqa: F821
 
-    if not title_matches or not active_link_matches:
+    if not title_node or not active_link:
         return
 
-    title_node = title_matches[0]
-    active_label = active_link_matches[0].textContent
+    active_label = active_link.textContent
     if active_label:
         title_node.textContent = active_label
 

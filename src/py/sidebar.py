@@ -1,4 +1,4 @@
-from pyscript import web, window
+from pyscript import window
 from pyscript.ffi import create_proxy
 
 RESIZE_PROXY = None
@@ -8,16 +8,10 @@ def is_mobile_viewport():
     return window.innerWidth < 768
 
 
-def get_sidebar_open_buttons():
-    return web.page.find("[data-sidebar-open]")
-
-
-def get_sidebar_collapse_buttons():
-    return web.page.find("[data-sidebar-collapse]")
-
-
 def sync_sidebar_controls(is_open):
     mobile_view = is_mobile_viewport()
+    open_buttons = find("[data-sidebar-open]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    collapse_buttons = find("[data-sidebar-collapse]")  # ty:ignore[unresolved-reference]  # noqa: F821
     hidden_classes = [
         "invisible",
         "pointer-events-none",
@@ -25,7 +19,7 @@ def sync_sidebar_controls(is_open):
         "md:pointer-events-none",
     ]
 
-    for button in get_sidebar_open_buttons():
+    for button in open_buttons:
         hide_open_button = (not mobile_view) and is_open
 
         if hide_open_button:
@@ -39,8 +33,8 @@ def sync_sidebar_controls(is_open):
 
         button.ariaExpanded = "true" if is_open else "false"
 
-    for button in get_sidebar_collapse_buttons():
-        button.hidden = mobile_view or (not is_open)
+    for button in collapse_buttons:
+        button.hidden = mobile_view
         button.ariaExpanded = "true" if is_open else "false"
 
 

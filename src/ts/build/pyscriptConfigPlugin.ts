@@ -15,7 +15,10 @@ export const createPyscriptConfigPlugin = (
 				async (_request, response, next) => {
 					try {
 						const source = await readPyscriptConfig();
-						response.setHeader("Content-Type", "application/json; charset=utf-8");
+						response.setHeader(
+							"Content-Type",
+							"application/json; charset=utf-8",
+						);
 						response.end(source);
 					} catch (error) {
 						next(error);

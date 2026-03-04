@@ -1,4 +1,3 @@
-from pyscript import web
 from pyscript.ffi import create_proxy
 
 LOADING_BADGE_ID = "pyscript-loading"
@@ -10,19 +9,19 @@ BADGE_REMOVED = False
 def hide_loading_badge(_event=None):
     global BADGE_REMOVED
 
-    if BADGE_REMOVED or not (badge_matches := web.page.find(f"#{LOADING_BADGE_ID}")):
+    badge = get(LOADING_BADGE_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    if BADGE_REMOVED or not badge:
         return
 
-    badge_matches[0].remove()
+    badge.remove()
     BADGE_REMOVED = True
 
 
 def start():
-    root_matches = web.page.find("html")
-    if not root_matches:
+    root = first("html")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not root:
         return
 
-    root = root_matches[0]
     for loading_event in LOADING_HIDE_EVENTS:
         hide_proxy = create_proxy(hide_loading_badge)
         BADGE_HIDE_PROXIES.append(hide_proxy)
