@@ -1,9 +1,45 @@
-<article class="card">
-    <section>
-        <h2>cijfercalculator</h2>
-        <p>
-            You can keep adding Basecoat markup here without growing the main
-            entry file.
-        </p>
-    </section>
-</article>
+<div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
+    <div role="tablist" aria-label="Cijfer calculator tabs" class="p-0.5">
+        <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="cijfercalculator-tool-panel"
+            tabindex="0"
+            class="h-full leading-none"
+        >
+            Tool
+        </button>
+        <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="cijfercalculator-history-panel"
+            tabindex="-1"
+            class="h-full leading-none"
+        >
+            History
+        </button>
+    </div>
+</div>
+
+<section id="cijfercalculator-tool-panel" role="tabpanel">
+    <article class="card">
+        <section>
+            <h2>cijfercalculator</h2>
+            <p>
+                You can keep adding Basecoat markup here without growing the
+                main entry file.
+            </p>
+        </section>
+    </article>
+</section>
+
+<section id="cijfercalculator-history-panel" role="tabpanel" hidden>
+    <article class="card">
+        <section>
+            <h2>cijfercalculator history</h2>
+            <p>No history yet.</p>
+        </section>
+    </article>
+</section>

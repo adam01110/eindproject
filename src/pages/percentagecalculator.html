@@ -1,9 +1,49 @@
-<article class="card">
-    <section>
-        <h2>percentagecalculator</h2>
-        <p>
-            Keep links and route shell in <code>index.html</code>, and put page
-            body markup inside partials.
-        </p>
-    </section>
-</article>
+<div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
+    <div
+        role="tablist"
+        aria-label="Percentage calculator tabs"
+        class="p-0.5"
+    >
+        <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="percentagecalculator-tool-panel"
+            tabindex="0"
+            class="h-full leading-none"
+        >
+            Tool
+        </button>
+        <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="percentagecalculator-history-panel"
+            tabindex="-1"
+            class="h-full leading-none"
+        >
+            History
+        </button>
+    </div>
+</div>
+
+<section id="percentagecalculator-tool-panel" role="tabpanel">
+    <article class="card">
+        <section>
+            <h2>percentagecalculator</h2>
+            <p>
+                Keep links and route shell in <code>index.html</code>, and put
+                page body markup inside partials.
+            </p>
+        </section>
+    </article>
+</section>
+
+<section id="percentagecalculator-history-panel" role="tabpanel" hidden>
+    <article class="card">
+        <section>
+            <h2>percentagecalculator history</h2>
+            <p>No history yet.</p>
+        </section>
+    </article>
+</section>

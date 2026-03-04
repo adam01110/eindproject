@@ -1,13 +1,15 @@
 import { resolve } from "node:path";
-import { createPyScriptsPlugin } from "./src/ts/pyScriptsPlugin";
-import { createInlinePartialsPlugin } from "./src/ts/inlinePartialsPlugin";
-import { createPyscriptConfigPlugin } from "./src/ts/pyscriptConfigPlugin";
 import { defineConfig } from "vite";
+import { createInlinePartialsPlugin } from "./src/ts/build/inlinePartialsPlugin";
+import { createPyScriptsPlugin } from "./src/ts/build/pyScriptsPlugin";
+import { createPyscriptConfigPlugin } from "./src/ts/build/pyscriptConfigPlugin";
 
 const srcRootPath = resolve(__dirname, "src");
 
 const inlinePartialsPlugin = createInlinePartialsPlugin(srcRootPath);
-const pyscriptConfigPlugin = createPyscriptConfigPlugin(resolve(__dirname, "pyscript.json"));
+const pyscriptConfigPlugin = createPyscriptConfigPlugin(
+	resolve(__dirname, "pyscript.json"),
+);
 const pyScriptsPlugin = createPyScriptsPlugin(resolve(srcRootPath, "py"));
 
 export default defineConfig({

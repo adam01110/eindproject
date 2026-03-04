@@ -24,15 +24,18 @@
 
         <!-- Css -->
         <link rel="stylesheet" href="./index.css" />
+        <script type="module" src="./ts/basecoat.ts"></script>
 
         <!-- Scripts -->
         <py-script src="./py/loading.py" config="../pyscript.json"></py-script>
+        <py-script src="./py/lib.py" config="../pyscript.json"></py-script>
         <py-script src="./py/sidebar.py" config="../pyscript.json"></py-script>
         <py-script
             src="./py/navigation.py"
             config="../pyscript.json"
         ></py-script>
         <py-script src="./py/theme.py" config="../pyscript.json"></py-script>
+        <py-script src="./py/settings.py" config="../pyscript.json"></py-script>
     </head>
     <body class="overflow-x-clip">
         <div
@@ -106,7 +109,7 @@
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-2"
-                                        data-page-label="lineaire vergelijking"
+                                        data-page-label="Lineaire Vergelijking"
                                         href="#page-2"
                                     >
                                         <i
@@ -114,7 +117,7 @@
                                             aria-hidden="true"
                                         ></i>
                                         <span class="flex-1 truncate"
-                                            >lineaire vergelijking</span
+                                            >Lineaire Vergelijking</span
                                         >
                                     </a>
                                 </li>
@@ -123,7 +126,7 @@
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-3"
-                                        data-page-label="cijfer calculator"
+                                        data-page-label="Cijfer Calculator"
                                         href="#page-3"
                                     >
                                         <i
@@ -131,7 +134,7 @@
                                             aria-hidden="true"
                                         ></i>
                                         <span class="flex-1 truncate"
-                                            >cijfer calculator</span
+                                            >Cijfer Calculator</span
                                         >
                                     </a>
                                 </li>
@@ -140,7 +143,7 @@
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
                                         data-page-id="page-4"
-                                        data-page-label="percentage calculator"
+                                        data-page-label="Percentage Calculator"
                                         href="#page-4"
                                     >
                                         <i
@@ -148,7 +151,7 @@
                                             aria-hidden="true"
                                         ></i>
                                         <span class="flex-1 truncate"
-                                            >percentage calculator</span
+                                            >Percentage Calculator</span
                                         >
                                     </a>
                                 </li>
@@ -156,37 +159,82 @@
                         </div>
                     </section>
 
-                    <article class="card mx-3 mb-3 mt-auto rounded-md p-0">
-                        <section class="p-0">
-                            <h2 class="m-0 px-3 py-2 text-sm leading-tight">
-                                Eindproject
-                            </h2>
-                        </section>
-                    </article>
+                    <div class="mx-3 mb-3 mt-auto flex items-center gap-2">
+                        <article class="card min-w-0 flex-1 rounded-md p-0">
+                            <section class="p-0">
+                                <h2 class="m-0 px-3 py-2 text-sm leading-tight">
+                                    Eindproject
+                                </h2>
+                            </section>
+                        </article>
+
+                        <div id="sidebar-settings-menu" class="popover">
+                            <button
+                                type="button"
+                                id="sidebar-settings-menu-trigger"
+                                aria-haspopup="dialog"
+                                aria-controls="sidebar-settings-panel"
+                                aria-expanded="false"
+                                aria-label="Open settings"
+                                class="btn-icon-outline"
+                            >
+                                <i
+                                    class="icon-[tabler--settings]"
+                                    aria-hidden="true"
+                                ></i>
+                            </button>
+                            <div
+                                id="sidebar-settings-menu-popover"
+                                data-popover
+                                aria-hidden="true"
+                                data-side="right"
+                                data-align="end"
+                                style="margin-left: 1.25rem"
+                            >
+                                <div
+                                    id="sidebar-settings-panel"
+                                    aria-labelledby="sidebar-settings-menu-trigger"
+                                >
+                                    <div
+                                        role="group"
+                                        class="field"
+                                        data-orientation="horizontal"
+                                    >
+                                        <label for="settings-placeholder-toggle"
+                                            >Placeholder</label
+                                        >
+                                        <input
+                                            id="settings-placeholder-toggle"
+                                            type="checkbox"
+                                            role="switch"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </aside>
 
             <main id="app-main" class="content-start space-y-6 p-4 md:p-6">
                 <header class="flex items-start justify-between gap-4">
-                    <div class="space-y-1">
-                        <button
-                            type="button"
-                            class="btn-outline h-8 w-8 p-0 md:invisible md:pointer-events-none"
-                            data-sidebar-open
-                            aria-label="Show sidebar"
-                            aria-controls="app-sidebar"
-                            aria-expanded="false"
-                        >
-                            <i
-                                class="icon-[tabler--menu-2] inline-block"
-                                aria-hidden="true"
-                            ></i>
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        class="btn-outline fixed left-4 top-3 z-30 h-8 w-8 p-0 md:invisible md:pointer-events-none"
+                        data-sidebar-open
+                        aria-label="Show sidebar"
+                        aria-controls="app-sidebar"
+                        aria-expanded="false"
+                    >
+                        <i
+                            class="icon-[tabler--menu-2] inline-block"
+                            aria-hidden="true"
+                        ></i>
+                    </button>
 
                     <button
                         type="button"
-                        class="btn-outline h-8 w-8 p-0"
+                        class="btn-outline ml-auto relative -top-3 h-8 w-8 p-0"
                         data-theme-toggle
                         aria-pressed="true"
                         aria-label="Switch to light mode"

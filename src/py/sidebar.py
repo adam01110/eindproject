@@ -8,13 +8,6 @@ def is_mobile_viewport():
     return window.innerWidth < 768
 
 
-def get_sidebar():
-    matches = web.page.find("#app-sidebar")
-    if not matches:
-        return None
-    return matches[0]
-
-
 def get_sidebar_open_buttons():
     return web.page.find("[data-sidebar-open]")
 
@@ -52,7 +45,7 @@ def sync_sidebar_controls(is_open):
 
 
 def set_sidebar_state(is_open):
-    sidebar = get_sidebar()
+    sidebar = get("app-sidebar")  # ty:ignore[unresolved-reference]  # noqa: F821
     if not sidebar:
         return
 
