@@ -24,7 +24,7 @@
         ruff-check.enable = true;
         ruff-format.enable = true;
 
-        # JavaScript / CSS / JSON
+        # Typescript / CSS / JSON
         biome = {
           enable = true;
 

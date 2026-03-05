@@ -99,9 +99,9 @@
                                     <a
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
-                                        data-page-id="page-1"
+                                        data-page-id="home"
                                         data-page-label="Home"
-                                        href="#page-1"
+                                        href="#home"
                                     >
                                         <i
                                             class="icon-[tabler--home] size-4"
@@ -119,9 +119,9 @@
                                     <a
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
-                                        data-page-id="page-2"
+                                        data-page-id="lineaire-vergelijking"
                                         data-page-label="Lineaire Vergelijking"
-                                        href="#page-2"
+                                        href="#lineaire-vergelijking"
                                     >
                                         <i
                                             class="icon-[tabler--apps] size-4"
@@ -136,9 +136,9 @@
                                     <a
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
-                                        data-page-id="page-3"
+                                        data-page-id="cijfer-calculator"
                                         data-page-label="Cijfer Calculator"
-                                        href="#page-3"
+                                        href="#cijfer-calculator"
                                     >
                                         <i
                                             class="icon-[tabler--file-text] size-4"
@@ -153,9 +153,9 @@
                                     <a
                                         class="flex min-w-0 items-center gap-2 px-3 py-2"
                                         data-nav-link
-                                        data-page-id="page-4"
+                                        data-page-id="percentage-calculator"
                                         data-page-label="Percentage Calculator"
-                                        href="#page-4"
+                                        href="#percentage-calculator"
                                     >
                                         <i
                                             class="icon-[tabler--settings] size-4"
@@ -224,8 +224,8 @@
                                             <p
                                                 id="sidebar-settings-dialog-description"
                                             >
-                                                Update your sidebar preferences
-                                                and save when done.
+                                                Update your preferences and save
+                                                when done.
                                             </p>
                                         </header>
                                         <section>
@@ -235,16 +235,21 @@
                                                 data-orientation="horizontal"
                                             >
                                                 <label
-                                                    for="settings-placeholder-toggle"
-                                                    >Placeholder</label
+                                                    for="settings-theme-select"
+                                                    >Theme</label
                                                 >
-                                                <input
-                                                    id="settings-placeholder-toggle"
-                                                    type="checkbox"
-                                                    role="switch"
-                                                    class="input"
-                                                    aria-checked="false"
-                                                />
+                                                <select
+                                                    id="settings-theme-select"
+                                                    class="select w-40"
+                                                    aria-label="Theme"
+                                                >
+                                                    <option value="dark">
+                                                        Dark
+                                                    </option>
+                                                    <option value="light">
+                                                        Light
+                                                    </option>
+                                                </select>
                                             </div>
                                         </section>
                                         <footer>
@@ -295,6 +300,7 @@
                         data-theme-toggle
                         aria-pressed="true"
                         aria-label="Switch to light mode"
+                        data-side="bottom"
                         data-tooltip="Switch to light mode"
                     >
                         <i
@@ -305,27 +311,27 @@
                 </header>
 
                 <section
-                    id="page-1"
+                    id="home"
                     data-page-section
                     data-page-partial="./pages/home.html"
                 ></section>
 
                 <section
-                    id="page-2"
+                    id="lineaire-vergelijking"
                     data-page-section
                     data-page-partial="./pages/lineaire-vergelijking.html"
                     hidden
                 ></section>
 
                 <section
-                    id="page-3"
+                    id="cijfer-calculator"
                     data-page-section
                     data-page-partial="./pages/cijfercalculator.html"
                     hidden
                 ></section>
 
                 <section
-                    id="page-4"
+                    id="percentage-calculator"
                     data-page-section
                     data-page-partial="./pages/percentagecalculator.html"
                     hidden

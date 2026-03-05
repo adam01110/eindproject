@@ -23,7 +23,9 @@ const collectPythonFiles = async (directoryPath: string): Promise<string[]> => {
 	return files;
 };
 
-const minifyPythonFile = async (pythonFilePath: string): Promise<string | null> =>
+const minifyPythonFile = async (
+	pythonFilePath: string,
+): Promise<string | null> =>
 	new Promise((resolveMinified, rejectMinified) => {
 		const child = spawn("pyminify", [pythonFilePath]);
 		let stdout = "";

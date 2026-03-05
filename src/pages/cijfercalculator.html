@@ -24,15 +24,26 @@
 </div>
 
 <section id="cijfercalculator-tool-panel" role="tabpanel">
-    <article class="card">
-        <section>
-            <h2>cijfercalculator</h2>
-            <p>
-                You can keep adding Basecoat markup here without growing the
-                main entry file.
-            </p>
-        </section>
-    </article>
+    <!-- Oh my fucking god, what the fuck tailwind. -->
+    <div
+        class="grid gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.125rem)_calc((100%-1rem)/2-1.125rem)]"
+    >
+        <article class="card">
+            <section>
+                <h2>cijfercalculator</h2>
+                <p>
+                    You can keep adding Basecoat markup here without growing the
+                    main entry file.
+                </p>
+            </section>
+        </article>
+        <article class="card">
+            <section>
+                <h2>cijfercalculator tools</h2>
+                <p>Use this second card for extra controls or quick notes.</p>
+            </section>
+        </article>
+    </div>
 </section>
 
 <section id="cijfercalculator-history-panel" role="tabpanel" hidden>

@@ -1,12 +1,35 @@
+import asyncio
+
 from pyscript import when
 
+PENDING_THEME = None
 
-def sync_placeholder_switch_state():
-    placeholder_toggle = get("settings-placeholder-toggle")  # ty:ignore[unresolved-reference]  # noqa: F821
-    if not placeholder_toggle:
+
+def normalize_theme(theme_value):
+    return theme_value if theme_value in {"light", "dark"} else "dark"
+
+
+def set_theme_select_value(theme_value):
+    theme_select = get("settings-theme-select")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not theme_select:
         return
 
-    placeholder_toggle.ariaChecked = "true" if placeholder_toggle.checked else "false"
+    normalized_theme = normalize_theme(theme_value)
+
+    if hasattr(theme_select, "select"):
+        theme_select.select(normalized_theme)
+        return
+
+    if hasattr(theme_select, "value"):
+        theme_select.value = normalized_theme
+
+
+async def sync_theme_select_state():
+    global PENDING_THEME
+
+    current_theme = await read_saved_theme()  # ty:ignore[unresolved-reference]  # noqa: F821
+    PENDING_THEME = normalize_theme(current_theme)
+    set_theme_select_value(PENDING_THEME)
 
 
 def set_dialog_open(is_open):
@@ -25,19 +48,29 @@ def set_dialog_open(is_open):
 
 
 @when("click", "#sidebar-settings-menu-trigger")
-def on_settings_button_click(event):
+async def on_settings_button_click(event):
     event.preventDefault()
 
     dialog = get("sidebar-settings-dialog")  # ty:ignore[unresolved-reference]  # noqa: F821
     if not dialog:
         return
 
+    if not dialog.open:
+        await sync_theme_select_state()
+
     set_dialog_open(not dialog.open)
 
 
 @when("close", "#sidebar-settings-dialog")
-def on_settings_dialog_close(_event):
+async def on_settings_dialog_close(_event):
+    global PENDING_THEME
+
     trigger = get("sidebar-settings-menu-trigger")  # ty:ignore[unresolved-reference]  # noqa: F821
+    dialog = get("sidebar-settings-dialog")  # ty:ignore[unresolved-reference]  # noqa: F821
+
+    if dialog and dialog.returnValue == "save" and PENDING_THEME is not None:
+        await set_theme(PENDING_THEME)  # ty:ignore[unresolved-reference]  # noqa: F821
+
     if not trigger:
         return
 
@@ -54,9 +87,20 @@ def on_settings_dialog_click(event):
         dialog.close()
 
 
-@when("change", "#settings-placeholder-toggle")
-def on_placeholder_switch_change(_event):
-    sync_placeholder_switch_state()
+@when("change", "#settings-theme-select")
+def on_theme_select_change(event):
+    global PENDING_THEME
+
+    selected_value = None
+    detail = getattr(event, "detail", None)
+
+    if detail and hasattr(detail, "value"):
+        selected_value = detail.value
+    elif event.target and hasattr(event.target, "value"):
+        selected_value = event.target.value
+
+    PENDING_THEME = normalize_theme(selected_value)
+    set_theme_select_value(PENDING_THEME)
 
 
 def start():
@@ -65,7 +109,7 @@ def start():
         return
 
     trigger.ariaExpanded = "false"
-    sync_placeholder_switch_state()
+    asyncio.create_task(sync_theme_select_state())
 
 
 start()

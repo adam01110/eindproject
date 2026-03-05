@@ -24,15 +24,26 @@
 </div>
 
 <section id="lineaire-vergelijking-tool-panel" role="tabpanel">
-    <article class="card">
-        <section>
-            <h2>lineaire vergelijking</h2>
-            <p>
-                This file is loaded at runtime by PyScript and injected into the
-                matching section.
-            </p>
-        </section>
-    </article>
+    <!-- Oh my fucking god, what the fuck tailwind. -->
+    <div
+        class="grid gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.125rem)_calc((100%-1rem)/2-1.125rem)]"
+    >
+        <article class="card">
+            <section>
+                <h2>lineaire vergelijking</h2>
+                <p>
+                    This file is loaded at runtime by PyScript and injected into
+                    the matching section.
+                </p>
+            </section>
+        </article>
+        <article class="card">
+            <section>
+                <h2>lineaire vergelijking tools</h2>
+                <p>Use this second card for extra controls or quick notes.</p>
+            </section>
+        </article>
+    </div>
 </section>
 
 <section id="lineaire-vergelijking-history-panel" role="tabpanel" hidden>

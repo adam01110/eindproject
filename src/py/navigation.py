@@ -1,7 +1,7 @@
 from pyscript import when, window
 from pyscript.ffi import create_proxy
 
-DEFAULT_PAGE_ID = "page-1"
+DEFAULT_PAGE_ID = "home"
 PAGE_IDS = []
 HASH_CHANGE_PROXY = None
 

@@ -24,15 +24,26 @@
 </div>
 
 <section id="percentagecalculator-tool-panel" role="tabpanel">
-    <article class="card">
-        <section>
-            <h2>percentagecalculator</h2>
-            <p>
-                Keep links and route shell in <code>index.html</code>, and put
-                page body markup inside partials.
-            </p>
-        </section>
-    </article>
+    <!-- Oh my fucking god, what the fuck tailwind. -->
+    <div
+        class="grid gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.125rem)_calc((100%-1rem)/2-1.125rem)]"
+    >
+        <article class="card">
+            <section>
+                <h2>percentagecalculator</h2>
+                <p>
+                    Keep links and route shell in <code>index.html</code>, and
+                    put page body markup inside partials.
+                </p>
+            </section>
+        </article>
+        <article class="card">
+            <section>
+                <h2>percentagecalculator tools</h2>
+                <p>Use this second card for extra controls or quick notes.</p>
+            </section>
+        </article>
+    </div>
 </section>
 
 <section id="percentagecalculator-history-panel" role="tabpanel" hidden>
