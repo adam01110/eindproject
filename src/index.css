@@ -1,6 +1,9 @@
 @import "tailwindcss";
+
 @import "basecoat-css";
 @import "./theme.css";
+
+@plugin "tailwindcss-motion";
 @plugin "@iconify/tailwind4";
 
 @source not "../AGENTS.md";

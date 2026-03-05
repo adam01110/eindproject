@@ -1,8 +1,7 @@
-import asyncio
-
 from pyscript import when
 
 PENDING_THEME = None
+PENDING_SIDEBAR_EDGE_HOVER = True
 
 
 def normalize_theme(theme_value):
@@ -24,12 +23,42 @@ def set_theme_select_value(theme_value):
         theme_select.value = normalized_theme
 
 
+def normalize_sidebar_edge_hover(value):
+    if isinstance(value, bool):
+        return value
+
+    return True
+
+
+def set_sidebar_edge_hover_switch_value(is_enabled):
+    sidebar_edge_hover_switch = get("settings-sidebar-edge-hover-switch")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not sidebar_edge_hover_switch:
+        return
+
+    normalized_value = normalize_sidebar_edge_hover(is_enabled)
+    sidebar_edge_hover_switch.checked = normalized_value
+    sidebar_edge_hover_switch.ariaChecked = "true" if normalized_value else "false"
+
+
 async def sync_theme_select_state():
     global PENDING_THEME
 
     current_theme = await read_saved_theme()  # ty:ignore[unresolved-reference]  # noqa: F821
     PENDING_THEME = normalize_theme(current_theme)
     set_theme_select_value(PENDING_THEME)
+
+
+async def sync_sidebar_edge_hover_switch_state():
+    global PENDING_SIDEBAR_EDGE_HOVER
+
+    current_value = await read_sidebar_edge_hover_enabled()  # ty:ignore[unresolved-reference]  # noqa: F821
+    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(current_value)
+    set_sidebar_edge_hover_switch_value(PENDING_SIDEBAR_EDGE_HOVER)
+
+
+async def sync_settings_state():
+    await sync_theme_select_state()
+    await sync_sidebar_edge_hover_switch_state()
 
 
 def set_dialog_open(is_open):
@@ -56,20 +85,23 @@ async def on_settings_button_click(event):
         return
 
     if not dialog.open:
-        await sync_theme_select_state()
+        await sync_settings_state()
 
     set_dialog_open(not dialog.open)
 
 
 @when("close", "#sidebar-settings-dialog")
 async def on_settings_dialog_close(_event):
-    global PENDING_THEME
+    global PENDING_THEME, PENDING_SIDEBAR_EDGE_HOVER
 
     trigger = get("sidebar-settings-menu-trigger")  # ty:ignore[unresolved-reference]  # noqa: F821
     dialog = get("sidebar-settings-dialog")  # ty:ignore[unresolved-reference]  # noqa: F821
 
     if dialog and dialog.returnValue == "save" and PENDING_THEME is not None:
         await set_theme(PENDING_THEME)  # ty:ignore[unresolved-reference]  # noqa: F821
+        normalized_edge_hover = normalize_sidebar_edge_hover(PENDING_SIDEBAR_EDGE_HOVER)
+        set_sidebar_edge_hover_enabled(normalized_edge_hover)  # ty:ignore[unresolved-reference]  # noqa: F821
+        await set_setting("sidebar_edge_hover", normalized_edge_hover)  # ty:ignore[unresolved-reference]  # noqa: F821
 
     if not trigger:
         return
@@ -103,13 +135,21 @@ def on_theme_select_change(event):
     set_theme_select_value(PENDING_THEME)
 
 
+@when("change", "#settings-sidebar-edge-hover-switch")
+def on_sidebar_edge_hover_change(event):
+    global PENDING_SIDEBAR_EDGE_HOVER
+
+    is_enabled = bool(event.target and event.target.checked)
+    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(is_enabled)
+    set_sidebar_edge_hover_switch_value(PENDING_SIDEBAR_EDGE_HOVER)
+
+
 def start():
     trigger = get("sidebar-settings-menu-trigger")  # ty:ignore[unresolved-reference]  # noqa: F821
     if not trigger:
         return
 
     trigger.ariaExpanded = "false"
-    asyncio.create_task(sync_theme_select_state())
 
 
 start()

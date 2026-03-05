@@ -75,6 +75,11 @@ def on_sidebar_collapse_click(_event):
     set_sidebar_state(False)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
+@when("click", "[data-sidebar-pin]")
+def on_sidebar_pin_click(_event):
+    set_sidebar_state(True)  # ty:ignore[unresolved-reference]  # noqa: F821
+
+
 def render(_event=None):
     active_page_id = normalize_hash(window.location.hash)
     expected_hash = f"#{active_page_id}"

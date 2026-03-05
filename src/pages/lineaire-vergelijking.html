@@ -1,5 +1,9 @@
 <div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
-    <div role="tablist" aria-label="Lineaire vergelijking tabs" class="p-0.5">
+    <div
+        role="tablist"
+        aria-label="Lineaire vergelijking tabs"
+        class="p-0.5 gap-1"
+    >
         <button
             type="button"
             role="tab"
@@ -8,6 +12,7 @@
             tabindex="0"
             class="h-full w-30 leading-none"
         >
+            <i class="icon-[tabler--tool] size-4" aria-hidden="true"></i>
             Tool
         </button>
         <button
@@ -18,6 +23,7 @@
             tabindex="-1"
             class="h-full w-30 leading-none"
         >
+            <i class="icon-[tabler--history] size-4" aria-hidden="true"></i>
             History
         </button>
     </div>
@@ -26,21 +32,32 @@
 <section id="lineaire-vergelijking-tool-panel" role="tabpanel">
     <!-- Oh my fucking god, what the fuck tailwind. -->
     <div
-        class="grid gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.125rem)_calc((100%-1rem)/2-1.125rem)]"
+        class="grid gap-4 lg:grid-cols-2 lg:[#app-sidebar[aria-hidden=false]_~_main_&]:grid-cols-[calc((100%-1rem)/2+1.25rem)_calc((100%-1rem)/2-1.25rem)]"
     >
         <article class="card">
             <section>
-                <h2>lineaire vergelijking</h2>
+                <h2>Output</h2>
                 <p>
-                    This file is loaded at runtime by PyScript and injected into
-                    the matching section.
+                    Lorem ipsum dolor sit amet consectetur adipiscing elit.
+                    Adipiscing elit quisque faucibus ex sapien vitae
+                    pellentesque. Vitae pellentesque sem placerat in id cursus
+                    mi. Cursus mi pretium tellus duis convallis tempus leo.
+                    Tempus leo eu aenean sed diam urna tempor. Urna tempor
+                    pulvinar vivamus fringilla lacus nec metus.
                 </p>
             </section>
         </article>
         <article class="card">
             <section>
-                <h2>lineaire vergelijking tools</h2>
-                <p>Use this second card for extra controls or quick notes.</p>
+                <h2>input</h2>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipiscing elit.
+                    Adipiscing elit quisque faucibus ex sapien vitae
+                    pellentesque. Vitae pellentesque sem placerat in id cursus
+                    mi. Cursus mi pretium tellus duis convallis tempus leo.
+                    Tempus leo eu aenean sed diam urna tempor. Urna tempor
+                    pulvinar vivamus fringilla lacus nec metus.
+                </p>
             </section>
         </article>
     </div>
