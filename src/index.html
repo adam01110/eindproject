@@ -24,7 +24,7 @@
 
         <!-- Css -->
         <link rel="stylesheet" href="./index.css" />
-        <script type="module" src="./ts/basecoat.ts"></script>
+        <script type="module" src="./index.ts"></script>
 
         <!-- Scripts -->
         <py-script src="./py/lib.py" config="../pyscript.json"></py-script>
@@ -192,12 +192,12 @@
                                 </section>
                             </article>
 
-                            <div id="sidebar-settings-menu" class="popover">
+                            <div id="sidebar-settings-menu">
                                 <button
                                     type="button"
                                     id="sidebar-settings-menu-trigger"
                                     aria-haspopup="dialog"
-                                    aria-controls="sidebar-settings-panel"
+                                    aria-controls="sidebar-settings-dialog"
                                     aria-expanded="false"
                                     aria-label="Open settings"
                                     class="btn-icon-outline"
@@ -207,35 +207,66 @@
                                         aria-hidden="true"
                                     ></i>
                                 </button>
-                                <div
-                                    id="sidebar-settings-menu-popover"
-                                    data-popover
-                                    aria-hidden="true"
-                                    data-side="right"
-                                    data-align="end"
-                                    style="margin-left: 1.25rem"
+                                <dialog
+                                    id="sidebar-settings-dialog"
+                                    class="dialog"
+                                    aria-labelledby="sidebar-settings-dialog-title"
+                                    aria-describedby="sidebar-settings-dialog-description"
                                 >
-                                    <div
-                                        id="sidebar-settings-panel"
-                                        aria-labelledby="sidebar-settings-menu-trigger"
-                                    >
-                                        <div
-                                            role="group"
-                                            class="field"
-                                            data-orientation="horizontal"
-                                        >
-                                            <label
-                                                for="settings-placeholder-toggle"
-                                                >Placeholder</label
+                                    <div id="sidebar-settings-panel">
+                                        <header>
+                                            <h2
+                                                id="sidebar-settings-dialog-title"
+                                                class="inline-flex items-center gap-2"
                                             >
-                                            <input
-                                                id="settings-placeholder-toggle"
-                                                type="checkbox"
-                                                role="switch"
-                                            />
-                                        </div>
+                                                Settings
+                                            </h2>
+                                            <p
+                                                id="sidebar-settings-dialog-description"
+                                            >
+                                                Update your sidebar preferences
+                                                and save when done.
+                                            </p>
+                                        </header>
+                                        <section>
+                                            <div
+                                                role="group"
+                                                class="field"
+                                                data-orientation="horizontal"
+                                            >
+                                                <label
+                                                    for="settings-placeholder-toggle"
+                                                    >Placeholder</label
+                                                >
+                                                <input
+                                                    id="settings-placeholder-toggle"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    class="input"
+                                                    aria-checked="false"
+                                                />
+                                            </div>
+                                        </section>
+                                        <footer>
+                                            <form method="dialog">
+                                                <button
+                                                    type="submit"
+                                                    value="cancel"
+                                                    class="btn-outline"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    value="save"
+                                                    class="btn"
+                                                >
+                                                    Save
+                                                </button>
+                                            </form>
+                                        </footer>
                                     </div>
-                                </div>
+                                </dialog>
                             </div>
                         </div>
                     </div>

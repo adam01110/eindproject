@@ -1,9 +1,9 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
-import { createGitCommitPlugin } from "./src/ts/build/gitCommitPlugin";
-import { createInlinePartialsPlugin } from "./src/ts/build/inlinePartialsPlugin";
-import { createPyScriptsPlugin } from "./src/ts/build/pyScriptsPlugin";
-import { createPyscriptConfigPlugin } from "./src/ts/build/pyscriptConfigPlugin";
+import { createGitCommitPlugin } from "./src/ts/gitCommitPlugin";
+import { createInlinePartialsPlugin } from "./src/ts/inlinePartialsPlugin";
+import { createPyScriptsPlugin } from "./src/ts/pyScriptsPlugin";
+import { createPyscriptConfigPlugin } from "./src/ts/pyscriptConfigPlugin";
 
 const srcRootPath = resolve(__dirname, "src");
 
