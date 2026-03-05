@@ -12,10 +12,22 @@ POINTER_MOVE_PROXY = None
 DOCUMENT_CLICK_PROXY = None
 EDGE_HOVER_ENABLED = True
 EDGE_HOVER_OPEN = False
+HIDDEN_OPEN_BUTTON_CLASSES = (
+    "invisible",
+    "pointer-events-none",
+    "md:invisible",
+    "md:pointer-events-none",
+)
 
 
 def is_mobile_viewport():
     return window.innerWidth < 768
+
+
+def set_expanded(buttons, is_open):
+    value = "true" if is_open else "false"
+    for button in buttons:
+        button.ariaExpanded = value
 
 
 def sync_sidebar_controls(is_open):
@@ -23,44 +35,30 @@ def sync_sidebar_controls(is_open):
     open_buttons = find("[data-sidebar-open]")  # ty:ignore[unresolved-reference]  # noqa: F821
     collapse_buttons = find("[data-sidebar-collapse]")  # ty:ignore[unresolved-reference]  # noqa: F821
     pin_buttons = find("[data-sidebar-pin]")  # ty:ignore[unresolved-reference]  # noqa: F821
-    hidden_classes = [
-        "invisible",
-        "pointer-events-none",
-        "md:invisible",
-        "md:pointer-events-none",
-    ]
 
     for button in open_buttons:
-        hide_open_button = (not mobile_view) and is_open
-
-        if hide_open_button:
-            for class_name in hidden_classes:
-                button.classList.add(class_name)
-            button.ariaHidden = "true"
-        else:
-            for class_name in hidden_classes:
-                button.classList.remove(class_name)
-            button.ariaHidden = "false"
-
-        button.ariaExpanded = "true" if is_open else "false"
+        hide = (not mobile_view) and is_open
+        for class_name in HIDDEN_OPEN_BUTTON_CLASSES:
+            getattr(button.classList, "add" if hide else "remove")(class_name)
+        button.ariaHidden = "true" if hide else "false"
 
     for button in collapse_buttons:
-        button.hidden = mobile_view or EDGE_HOVER_OPEN
-        button.ariaHidden = "true" if (mobile_view or EDGE_HOVER_OPEN) else "false"
-        button.ariaExpanded = "true" if is_open else "false"
+        hidden = mobile_view or EDGE_HOVER_OPEN
+        button.hidden = hidden
+        button.ariaHidden = "true" if hidden else "false"
 
     for button in pin_buttons:
-        should_show_pin = (not mobile_view) and is_open and EDGE_HOVER_OPEN
-        button.hidden = not should_show_pin
-        button.ariaHidden = "false" if should_show_pin else "true"
-        button.ariaExpanded = "true" if is_open else "false"
+        visible = (not mobile_view) and is_open and EDGE_HOVER_OPEN
+        button.hidden = not visible
+        button.ariaHidden = "false" if visible else "true"
+
+    set_expanded(open_buttons, is_open)
+    set_expanded(collapse_buttons, is_open)
+    set_expanded(pin_buttons, is_open)
 
 
 def normalize_sidebar_edge_hover(value):
-    if isinstance(value, bool):
-        return value
-
-    return True
+    return value if isinstance(value, bool) else True
 
 
 def set_sidebar_edge_hover_enabled(is_enabled):
@@ -77,18 +75,14 @@ async def read_sidebar_edge_hover_enabled():
 
 
 async def sync_sidebar_edge_hover_state():
-    is_enabled = await read_sidebar_edge_hover_enabled()
-    set_sidebar_edge_hover_enabled(is_enabled)
+    set_sidebar_edge_hover_enabled(await read_sidebar_edge_hover_enabled())
 
 
 def close_temporary_edge_hover_sidebar():
     global EDGE_HOVER_OPEN
-
-    if not EDGE_HOVER_OPEN:
-        return
-
-    EDGE_HOVER_OPEN = False
-    set_sidebar_state(False, temporary=True)
+    if EDGE_HOVER_OPEN:
+        EDGE_HOVER_OPEN = False
+        set_sidebar_state(False, temporary=True)
 
 
 def on_pointer_move(event):
@@ -100,7 +94,6 @@ def on_pointer_move(event):
 
     pointer_x = getattr(event, "clientX", None)
     pointer_y = getattr(event, "clientY", None)
-
     if pointer_x is None or pointer_y is None:
         return
 
@@ -108,9 +101,7 @@ def on_pointer_move(event):
     if not sidebar:
         return
 
-    sidebar_is_open = sidebar.ariaHidden != "true"
-
-    if not sidebar_is_open:
+    if sidebar.ariaHidden == "true":
         if pointer_x <= SIDEBAR_EDGE_HOVER_TRIGGER_PX:
             EDGE_HOVER_OPEN = True
             set_sidebar_state(True, temporary=True)
@@ -125,13 +116,12 @@ def on_pointer_move(event):
         return
 
     bounds = sidebar_nav.getBoundingClientRect()
-    near_left_edge = pointer_x <= SIDEBAR_EDGE_HOVER_TRIGGER_PX
-    inside_sidebar_x = (
+    if pointer_x <= SIDEBAR_EDGE_HOVER_TRIGGER_PX:
+        return
+    if (
         bounds.left <= pointer_x <= (bounds.right + SIDEBAR_EDGE_HOVER_CLOSE_BUFFER_PX)
-    )
-    inside_sidebar_y = bounds.top <= pointer_y <= bounds.bottom
-
-    if near_left_edge or (inside_sidebar_x and inside_sidebar_y):
+        and bounds.top <= pointer_y <= bounds.bottom
+    ):
         return
 
     close_temporary_edge_hover_sidebar()
@@ -160,14 +150,12 @@ def on_document_click(event):
     if sidebar_nav and target == sidebar:
         pointer_x = getattr(event, "clientX", None)
         pointer_y = getattr(event, "clientY", None)
-
         if pointer_x is not None and pointer_y is not None:
             bounds = sidebar_nav.getBoundingClientRect()
-            clicked_inside_nav = (
+            if (
                 bounds.left <= pointer_x <= bounds.right
                 and bounds.top <= pointer_y <= bounds.bottom
-            )
-            if clicked_inside_nav:
+            ):
                 return
 
     set_sidebar_state(False)
@@ -175,7 +163,6 @@ def on_document_click(event):
 
 def set_sidebar_state(is_open, temporary=False):
     global EDGE_HOVER_OPEN
-
     if not temporary:
         EDGE_HOVER_OPEN = False
 
@@ -211,7 +198,6 @@ def sync_sidebar_for_viewport(_event=None):
 
 def setup_sidebar_behavior():
     global RESIZE_PROXY, POINTER_MOVE_PROXY, DOCUMENT_CLICK_PROXY
-
     RESIZE_PROXY = create_proxy(sync_sidebar_for_viewport)
     window.addEventListener("resize", RESIZE_PROXY)
     POINTER_MOVE_PROXY = create_proxy(on_pointer_move)

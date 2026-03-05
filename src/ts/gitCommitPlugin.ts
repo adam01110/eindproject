@@ -1,26 +1,27 @@
 import { execSync } from "node:child_process";
 import type { Plugin } from "vite";
 
-const read_short_git_hash = (): string => {
-	try {
-		const value = execSync("git rev-parse --short HEAD", {
-			encoding: "utf8",
-		}).trim();
+const UNKNOWN_HASH = "unknown";
 
-		return value || "unknown";
+const readShortGitHash = (): string => {
+	try {
+		return (
+			execSync("git rev-parse --short HEAD", {
+			encoding: "utf8",
+			}).trim() || UNKNOWN_HASH
+		);
 	} catch {
-		return "unknown";
+		return UNKNOWN_HASH;
 	}
 };
 
 export const createGitCommitPlugin = (
 	placeholder = "__GIT_COMMIT_HASH__",
 ): Plugin => {
-	const shortGitHash = read_short_git_hash();
+	const shortGitHash = readShortGitHash();
 
 	return {
 		name: "git-commit-html-plugin",
-
 		transformIndexHtml(html) {
 			return html.split(placeholder).join(shortGitHash);
 		},
