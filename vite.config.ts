@@ -15,6 +15,7 @@ const pyScriptsPlugin = createPyScriptsPlugin(resolve(srcRootPath, "py"));
 const gitCommitPlugin = createGitCommitPlugin();
 
 export default defineConfig({
+	base: "./",
 	plugins: [
 		inlinePartialsPlugin,
 		pyscriptConfigPlugin,
