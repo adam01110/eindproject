@@ -33,10 +33,10 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: nix develop --accept-flake-config -c bun install --frozen-lockfile
+        run: nix develop .#build -c bun install --frozen-lockfile
 
       - name: Build
-        run: nix develop --accept-flake-config -c bun run build
+        run: nix develop .#build -c bun run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
