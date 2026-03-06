@@ -1,14 +1,10 @@
 <div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
-    <div
-        role="tablist"
-        aria-label="Lineaire vergelijking tabs"
-        class="p-0.5 gap-1"
-    >
+    <div role="tablist" aria-label="Cijfer calculator tabs" class="p-0.5 gap-1">
         <button
             type="button"
             role="tab"
             aria-selected="true"
-            aria-controls="lineaire-vergelijking-tool-panel"
+            aria-controls="cijfer-calculator-tool-panel"
             tabindex="0"
             class="h-full w-30 leading-none"
         >
@@ -19,7 +15,7 @@
             type="button"
             role="tab"
             aria-selected="false"
-            aria-controls="lineaire-vergelijking-history-panel"
+            aria-controls="cijfer-calculator-history-panel"
             tabindex="-1"
             class="h-full w-30 leading-none"
         >
@@ -29,7 +25,7 @@
     </div>
 </div>
 
-<section id="lineaire-vergelijking-tool-panel" role="tabpanel">
+<section id="cijfer-calculator-tool-panel" role="tabpanel">
     <!-- Oh my fucking god, what the fuck tailwind. -->
     <div
         class="grid gap-4 lg:grid-cols-2 lg:[#app-sidebar[aria-hidden=false]_~_main_&]:grid-cols-[calc((100%-1rem)/2+1.25rem)_calc((100%-1rem)/2-1.25rem)]"
@@ -63,10 +59,10 @@
     </div>
 </section>
 
-<section id="lineaire-vergelijking-history-panel" role="tabpanel" hidden>
+<section id="cijfer-calculator-history-panel" role="tabpanel" hidden>
     <article class="card">
         <section>
-            <h2>lineaire vergelijking history</h2>
+            <h2>cijfer calculator history</h2>
             <p>No history yet.</p>
         </section>
     </article>

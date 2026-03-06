@@ -1,4 +1,5 @@
 {
-	"packages": [],
+	"name": "eindproject",
+	"packages": ["matplotlib"],
 	"files": {}
 }

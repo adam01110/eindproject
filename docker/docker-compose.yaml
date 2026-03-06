@@ -1,0 +1,23 @@
+name: code
+services:
+  code-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: code-server
+    ports:
+      - 8443:8443
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC+2
+      - PASSWORD=eindproject26
+      - SUDO_PASSWORD=eindproject26
+      - DEFAULT_WORKSPACE=/config/workspace
+    volumes:
+      - data:/config
+      - nix-store:/nix
+
+volumes:
+  data:
+  nix-store:

@@ -35,7 +35,9 @@ def set_sidebar_edge_hover_switch_value(is_enabled):
 async def sync_settings_state():
     global PENDING_THEME, PENDING_SIDEBAR_EDGE_HOVER
     PENDING_THEME = normalize_theme(await read_saved_theme())  # ty:ignore[unresolved-reference]  # noqa: F821
-    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(await read_sidebar_edge_hover_enabled())  # ty:ignore[unresolved-reference]  # noqa: F821
+    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(
+        await read_sidebar_edge_hover_enabled()
+    )  # ty:ignore[unresolved-reference]  # noqa: F821
     set_theme_select_value(PENDING_THEME)
     set_sidebar_edge_hover_switch_value(PENDING_SIDEBAR_EDGE_HOVER)
 
@@ -97,7 +99,9 @@ def on_theme_select_change(event):
 @when("change", "#settings-sidebar-edge-hover-switch")
 def on_sidebar_edge_hover_change(event):
     global PENDING_SIDEBAR_EDGE_HOVER
-    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(bool(event.target and event.target.checked))
+    PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(
+        bool(event.target and event.target.checked)
+    )
     set_sidebar_edge_hover_switch_value(PENDING_SIDEBAR_EDGE_HOVER)
 
 

@@ -1,0 +1,123 @@
+<div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
+    <div
+        role="tablist"
+        aria-label="Lineaire vergelijking oplosser tabs"
+        class="p-0.5 gap-1"
+    >
+        <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="lineaire-vergelijking-oplosser-tool-panel"
+            tabindex="0"
+            class="h-full w-30 leading-none"
+        >
+            <i class="icon-[tabler--tool] size-4" aria-hidden="true"></i>
+            Tool
+        </button>
+        <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="lineaire-vergelijking-oplosser-history-panel"
+            tabindex="-1"
+            class="h-full w-30 leading-none"
+        >
+            <i class="icon-[tabler--history] size-4" aria-hidden="true"></i>
+            History
+        </button>
+    </div>
+</div>
+
+<section id="lineaire-vergelijking-oplosser-tool-panel" role="tabpanel">
+    <!-- Oh my fucking god, what the fuck tailwind. -->
+    <div
+        class="grid gap-4 lg:grid-cols-2 lg:[#app-sidebar[aria-hidden=false]_~_main_&]:grid-cols-[calc((100%-1rem)/2+1.25rem)_calc((100%-1rem)/2-1.25rem)]"
+    >
+        <article class="card">
+            <section>
+                <h2>Output</h2>
+                <p>Nog geen resultaat.</p>
+            </section>
+        </article>
+        <article class="card">
+            <section>
+                <h2 class="mb-2">Input</h2>
+                <span class="badge-outline mb-4">y = ax + b</span>
+                <form
+                    class="space-y-4"
+                    aria-label="Lineaire vergelijking invoer"
+                >
+                    <div class="field">
+                        <div class="flex items-center gap-2">
+                            <i
+                                class="icon-[tabler--circle-letter-a] size-5 mr-1"
+                                aria-hidden="true"
+                            ></i>
+                            <input
+                                id="lineaire-vergelijking-a"
+                                name="a"
+                                type="number"
+                                inputmode="decimal"
+                                class="input w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                aria-label="a"
+                                placeholder="Voer a in."
+                            />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="flex items-center gap-2">
+                            <i
+                                class="icon-[tabler--circle-letter-b] size-5 mr-1"
+                                aria-hidden="true"
+                            ></i>
+                            <input
+                                id="lineaire-vergelijking-b"
+                                name="b"
+                                type="number"
+                                inputmode="decimal"
+                                class="input w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                aria-label="b"
+                                placeholder="Voer b in."
+                            />
+                        </div>
+                    </div>
+                    <div class="field mt-8">
+                        <div class="flex items-center gap-2">
+                            <i
+                                class="icon-[tabler--circle-letter-y] size-5 mr-1"
+                                aria-hidden="true"
+                            ></i>
+                            <input
+                                id="lineaire-vergelijking-y"
+                                name="y"
+                                type="number"
+                                inputmode="decimal"
+                                class="input w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                aria-label="y"
+                                placeholder="Voer y in."
+                            />
+                        </div>
+                    </div>
+                </form>
+                <div class="mt-4 flex justify-center gap-2">
+                    <button type="button" class="btn">Berekenen</button>
+                    <button type="button" class="btn-destructive">Reset</button>
+                </div>
+            </section>
+        </article>
+    </div>
+</section>
+
+<section
+    id="lineaire-vergelijking-oplosser-history-panel"
+    role="tabpanel"
+    hidden
+>
+    <article class="card">
+        <section>
+            <h2>lineaire vergelijking oplosser history</h2>
+            <p>No history yet.</p>
+        </section>
+    </article>
+</section>

@@ -7,7 +7,7 @@ const readShortGitHash = (): string => {
 	try {
 		return (
 			execSync("git rev-parse --short HEAD", {
-			encoding: "utf8",
+				encoding: "utf8",
 			}).trim() || UNKNOWN_HASH
 		);
 	} catch {

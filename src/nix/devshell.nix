@@ -1,23 +1,15 @@
 _: {
-  perSystem = {pkgs, ...}: {
+  perSystem = {
+    pkgs,
+    config,
+    ...
+  }: {
     devShells.default = let
       inherit (builtins) attrValues;
       inherit (pkgs) mkShell;
       inherit (pkgs.lib) getExe;
 
-      python-minifier = pkgs.python3Packages.buildPythonApplication rec {
-        pname = "python-minifier";
-        version = "3.2.0";
-        format = "setuptools";
-
-        src = pkgs.fetchPypi {
-          pname = "python_minifier";
-          inherit version;
-          hash = "sha256-051KqWVSBocLibQQmahHJeGEUxmqWovqahBGtWRM1BM=";
-        };
-
-        nativeBuildInputs = [pkgs.python3Packages.setuptools];
-      };
+      inherit (config.packages) python-minifier;
     in
       mkShell {
         packages =
