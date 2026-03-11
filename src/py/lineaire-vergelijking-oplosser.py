@@ -130,17 +130,6 @@ def lineaire_render_summary_card(label, value, icon_class):
     """
 
 
-def lineaire_render_step_card(title, expression):
-    return f"""
-        <article class="card gap-0 p-0">
-            <section class="p-4">
-                <p class="text-sm font-semibold text-base-content/60">{title}</p>
-                <p class="mt-2 break-words text-base">{expression}</p>
-            </section>
-        </article>
-    """
-
-
 def lineaire_render_result(result, error=None):
     global LINEAIRE_LAST_RESULT
 
@@ -185,17 +174,6 @@ def lineaire_render_result(result, error=None):
         ),
     ]
 
-    steps_html = "".join(
-        (
-            lineaire_render_step_card("Vergelijking", f"{formatted_y} = {formatted_a}x + {formatted_b}"),
-            lineaire_render_step_card("Stap 1", f"{formatted_y} - {formatted_b} = {formatted_a}x"),
-            lineaire_render_step_card(
-                "Stap 2",
-                f"x = ({formatted_y} - {formatted_b}) / {formatted_a} = {formatted_x}",
-            ),
-        )
-    )
-
     result_container.innerHTML = f"""
         <div class="flex h-full flex-col gap-4">
             <article class="card gap-0 p-0">
@@ -208,9 +186,6 @@ def lineaire_render_result(result, error=None):
             </article>
             <div class="grid gap-3 sm:grid-cols-2">
                 {''.join(summary_cards)}
-            </div>
-            <div class="grid gap-3 xl:grid-cols-3">
-                {steps_html}
             </div>
         </div>
     """
