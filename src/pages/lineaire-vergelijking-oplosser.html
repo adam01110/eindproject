@@ -1,3 +1,8 @@
+<py-script
+    src="./py/lineaire-vergelijking-oplosser.py"
+    config="./pyscript.json"
+></py-script>
+
 <div class="tabs fixed left-1/2 top-2 z-20 -translate-x-1/2">
     <div
         role="tablist"
@@ -36,8 +41,21 @@
     >
         <article class="card">
             <section>
-                <h2>Output</h2>
-                <p>Nog geen resultaat.</p>
+                <h2 class="mb-2">Output</h2>
+                <div
+                    id="lineaire-vergelijking-mpl"
+                    class="flex justify-center [&_img]:block [&_img]:max-w-full [&_img]:rounded-xl"
+                ></div>
+                <article class="card mt-4">
+                    <section>
+                        <h3 class="mb-2">Legenda</h3>
+                        <div id="lineaire-vergelijking-legend">
+                            <p class="text-base-content/60">
+                                Voer waarden in om de grafiek te zien.
+                            </p>
+                        </div>
+                    </section>
+                </article>
             </section>
         </article>
         <article class="card">
@@ -101,8 +119,20 @@
                     </div>
                 </form>
                 <div class="mt-4 flex justify-center gap-2">
-                    <button type="button" class="btn">Berekenen</button>
-                    <button type="button" class="btn-destructive">Reset</button>
+                    <button
+                        type="button"
+                        id="lineaire-vergelijking-berekenen"
+                        class="btn"
+                    >
+                        Berekenen
+                    </button>
+                    <button
+                        type="button"
+                        id="lineaire-vergelijking-reset"
+                        class="btn-destructive"
+                    >
+                        Reset
+                    </button>
                 </div>
             </section>
         </article>

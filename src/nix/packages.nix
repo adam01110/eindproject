@@ -1,9 +1,5 @@
 _: {
-  perSystem = {
-    pkgs,
-    config,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     packages.python-minifier = pkgs.python3Packages.buildPythonApplication rec {
       pname = "python-minifier";
       version = "3.2.0";
@@ -16,13 +12,6 @@ _: {
       };
 
       nativeBuildInputs = [pkgs.python3Packages.setuptools];
-    };
-
-    devShells.build = pkgs.mkShell {
-      packages = [
-        pkgs.bun
-        config.packages.python-minifier
-      ];
     };
   };
 }

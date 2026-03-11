@@ -1,5 +1,5 @@
 {
 	"name": "eindproject",
-	"packages": ["matplotlib"],
+	"packages": ["numpy", "matplotlib"],
 	"files": {}
 }
