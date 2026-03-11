@@ -21,7 +21,6 @@
         statix.enable = true;
 
         # Python
-        ruff-check.enable = true;
         ruff-format.enable = true;
 
         # Typescript / CSS / JSON

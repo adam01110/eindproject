@@ -39,31 +39,32 @@
 <section id="lineaire-vergelijking-oplosser-tool-panel" role="tabpanel">
     <!-- Oh my fucking god, what the fuck tailwind. -->
     <div
-        class="grid items-start gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.5rem)_calc((100%-1rem)/2-1.5rem)]"
+        class="grid gap-4 lg:grid-cols-[calc((100%-1rem)/2+0.375rem)_calc((100%-1rem)/2-0.375rem)] lg:[#app-sidebar[aria-hidden=false]_~_main_&]:grid-cols-[calc((100%-1rem)/2+1.25rem)_calc((100%-1rem)/2-1.25rem)]"
     >
         <article class="card min-h-157.5">
             <section class="flex h-full flex-col">
                 <h2 class="mb-2">Output</h2>
-                <div
-                    id="lineaire-vergelijking-mpl"
-                    class="flex h-112 items-center justify-center overflow-hidden [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain"
-                ></div>
-                <article class="card mt-4">
-                    <section>
-                        <h3 class="mb-2">Legenda</h3>
-                        <div id="lineaire-vergelijking-legend">
-                            <p class="text-base-content/60">
-                                Voer waarden in om de grafiek te zien.
-                            </p>
-                        </div>
-                    </section>
-                </article>
+                <p class="text-base-content/70">
+                    Bekijk direct de oplossing, de ingevulde waarden en hoe de
+                    vergelijking is omgezet naar x.
+                </p>
+                <div id="lineaire-vergelijking-result" class="mt-4 flex-1">
+                    <div
+                        class="flex h-full min-h-96 items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/60 p-6 text-center text-base-content/60"
+                    >
+                        Vul waarden in en klik op berekenen.
+                    </div>
+                </div>
             </section>
         </article>
         <article class="card">
             <section>
-                <h2 class="mb-2">Input</h2>
-                <span class="badge-outline mb-4">y = ax + b</span>
+                <div class="flex items-start justify-between gap-3">
+                    <h2 class="mb-2">Input</h2>
+                    <span class="badge-outline whitespace-nowrap"
+                        >y = ax + b</span
+                    >
+                </div>
                 <form
                     class="space-y-4"
                     aria-label="Lineaire vergelijking invoer"

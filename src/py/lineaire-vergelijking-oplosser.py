@@ -1,16 +1,17 @@
 import asyncio
+from html import escape
 
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
 import numpy as np  # ty:ignore[unresolved-import]
 from pyscript import display, when, window
 from pyscript.ffi import create_proxy
 
-TOOL_INDEX = 1
-LAST_RESULT = None
-THEME_CHANGE_PROXY = None
-HISTORY_CLICK_PROXY = None
+LINEAIRE_TOOL_INDEX = 1
+LINEAIRE_LAST_RESULT = None
+LINEAIRE_THEME_CHANGE_PROXY = None
+LINEAIRE_HISTORY_CLICK_PROXY = None
 
-HISTORY_VALUE_ICONS = {
+LINEAIRE_HISTORY_VALUE_ICONS = {
     "a": "icon-[tabler--circle-letter-a]",
     "b": "icon-[tabler--circle-letter-b]",
     "y": "icon-[tabler--circle-letter-y]",
@@ -18,7 +19,7 @@ HISTORY_VALUE_ICONS = {
 }
 
 
-def clear_plot_output():
+def lineaire_clear_plot_output():
     plt.close("all")
 
     target_div = get("lineaire-vergelijking-mpl")  # ty:ignore[unresolved-reference]  # noqa: F821
@@ -26,7 +27,7 @@ def clear_plot_output():
         target_div.innerHTML = ""
 
 
-def get_input_values():
+def lineaire_get_input_values():
     a_input = get("lineaire-vergelijking-a")  # ty:ignore[unresolved-reference]  # noqa: F821
     b_input = get("lineaire-vergelijking-b")  # ty:ignore[unresolved-reference]  # noqa: F821
     y_input = get("lineaire-vergelijking-y")  # ty:ignore[unresolved-reference]  # noqa: F821
@@ -41,14 +42,14 @@ def get_input_values():
     )
 
 
-def normalize_input_values(values):
+def lineaire_normalize_input_values(values):
     if not isinstance(values, (list, tuple)) or len(values) != 3:
         return None
 
     return tuple(str(value).strip() for value in values)
 
 
-def validate_inputs(a_str, b_str, y_str):
+def lineaire_validate_inputs(a_str, b_str, y_str):
     values = (("a", a_str), ("b", b_str), ("y", y_str))
 
     if any(not value for _, value in values):
@@ -67,7 +68,7 @@ def validate_inputs(a_str, b_str, y_str):
     return None
 
 
-def solve_linear_equation(a, b, y):
+def lineaire_solve_linear_equation(a, b, y):
     stap1 = y - b
     x = stap1 / a
 
@@ -80,41 +81,143 @@ def solve_linear_equation(a, b, y):
     }
 
 
-def format_value(value):
+def lineaire_format_value(value):
     if float(value).is_integer():
         return str(int(value))
 
     return f"{value:.2f}".rstrip("0").rstrip(".")
 
 
-def render_result(result, error=None):
-    global LAST_RESULT
+def lineaire_render_placeholder(message):
+    lineaire_clear_plot_output()
 
-    if error or not result:
-        LAST_RESULT = None
-        clear_plot_output()
-        legend_card = get("lineaire-vergelijking-legend")  # ty:ignore[unresolved-reference]  # noqa: F821
-        if legend_card:
-            legend_card.innerHTML = '<p class="text-base-content/60">Voer waarden in om de grafiek te zien.</p>'
+    result_container = get("lineaire-vergelijking-result")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not result_container:
         return
 
-    LAST_RESULT = result
+    result_container.innerHTML = f"""
+        <div class="flex h-full min-h-96 items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/60 p-6 text-center text-base-content/60">
+            {escape(message)}
+        </div>
+    """
+
+
+def lineaire_render_error(message):
+    lineaire_clear_plot_output()
+
+    result_container = get("lineaire-vergelijking-result")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not result_container:
+        return
+
+    result_container.innerHTML = f"""
+        <div class="flex h-full min-h-96 items-center justify-center rounded-xl border border-destructive/40 bg-destructive/10 p-6 text-center text-destructive">
+            {escape(message)}
+        </div>
+    """
+
+
+def lineaire_render_summary_card(label, value, icon_class):
+    return f"""
+        <article class="card gap-0 p-0">
+            <section class="p-4">
+                <div class="flex items-center gap-2 text-sm font-semibold text-base-content/60">
+                    <i class="{icon_class} size-4" aria-hidden="true"></i>
+                    <span class="truncate">{label}</span>
+                </div>
+                <p class="mt-3 text-base">{value}</p>
+            </section>
+        </article>
+    """
+
+
+def lineaire_render_step_card(title, expression):
+    return f"""
+        <article class="card gap-0 p-0">
+            <section class="p-4">
+                <p class="text-sm font-semibold text-base-content/60">{title}</p>
+                <p class="mt-2 break-words text-base">{expression}</p>
+            </section>
+        </article>
+    """
+
+
+def lineaire_render_result(result, error=None):
+    global LINEAIRE_LAST_RESULT
+
+    if error:
+        LINEAIRE_LAST_RESULT = None
+        lineaire_render_error(error)
+        return
+
+    if not result:
+        LINEAIRE_LAST_RESULT = None
+        lineaire_render_placeholder("Vul waarden in en klik op berekenen.")
+        return
+
+    LINEAIRE_LAST_RESULT = result
+
+    result_container = get("lineaire-vergelijking-result")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not result_container:
+        return
 
     a = result["a"]
     b = result["b"]
     y = result["y"]
     x_solution = result["x"]
-    formatted_a = format_value(a)
-    formatted_b = format_value(b)
-    formatted_y = format_value(y)
-    formatted_x = format_value(x_solution)
+    formatted_a = lineaire_format_value(a)
+    formatted_b = lineaire_format_value(b)
+    formatted_y = lineaire_format_value(y)
+    formatted_x = lineaire_format_value(x_solution)
 
     x_range = np.linspace(x_solution - 5, x_solution + 5, 100)
     y_values = a * x_range + b
 
-    clear_plot_output()
+    summary_cards = [
+        lineaire_render_summary_card(
+            "Oplossing voor x",
+            formatted_x,
+            "icon-[tabler--circle-letter-x]",
+        ),
+        lineaire_render_summary_card(
+            "Waarde van y",
+            formatted_y,
+            "icon-[tabler--circle-letter-y]",
+        ),
+    ]
 
-    fig, ax = plt.subplots()
+    steps_html = "".join(
+        (
+            lineaire_render_step_card("Vergelijking", f"{formatted_y} = {formatted_a}x + {formatted_b}"),
+            lineaire_render_step_card("Stap 1", f"{formatted_y} - {formatted_b} = {formatted_a}x"),
+            lineaire_render_step_card(
+                "Stap 2",
+                f"x = ({formatted_y} - {formatted_b}) / {formatted_a} = {formatted_x}",
+            ),
+        )
+    )
+
+    result_container.innerHTML = f"""
+        <div class="flex h-full flex-col gap-4">
+            <article class="card gap-0 p-0">
+                <section class="p-2">
+                    <div
+                        id="lineaire-vergelijking-mpl"
+                        class="flex min-h-80 items-center justify-center overflow-hidden [&_canvas]:size-full [&_canvas]:max-w-full [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_svg]:size-full [&_svg]:max-w-full"
+                    ></div>
+                </section>
+            </article>
+            <div class="grid gap-3 sm:grid-cols-2">
+                {''.join(summary_cards)}
+            </div>
+            <div class="grid gap-3 xl:grid-cols-3">
+                {steps_html}
+            </div>
+        </div>
+    """
+
+    lineaire_clear_plot_output()
+
+    fig, ax = plt.subplots(figsize=(8, 4.6))
     theme = apply_matplotlib_theme(fig, ax)  # ty:ignore[unresolved-reference]  # noqa: F821
     chart_colors = theme["chart_colors"]
 
@@ -150,31 +253,13 @@ def render_result(result, error=None):
     ax.set_xlabel("x")
     ax.set_ylabel("y", rotation="horizontal", labelpad=15)
     ax.grid(True, color=theme["grid_color"], alpha=0.25)
+    ax.set_axisbelow(True)
 
     display(fig, target="lineaire-vergelijking-mpl")
     plt.close(fig)
 
-    legend_card = get("lineaire-vergelijking-legend")  # ty:ignore[unresolved-reference]  # noqa: F821
-    if legend_card:
-        legend_card.innerHTML = f"""
-            <div class="flex flex-col gap-3">
-                <div class="field">
-                    <div class="flex items-center gap-2">
-                        <i class="icon-[tabler--circle-letter-y] size-5 mr-1" aria-hidden="true"></i>
-                        <div class="input w-full cursor-default">{formatted_y}</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="flex items-center gap-2">
-                        <i class="icon-[tabler--circle-letter-x] size-5 mr-1" aria-hidden="true"></i>
-                        <div class="input w-full cursor-default">{formatted_x}</div>
-                    </div>
-                </div>
-            </div>
-        """
 
-
-def set_input_values(a, b, y):
+def lineaire_set_input_values(a, b, y):
     input_values = {
         "lineaire-vergelijking-a": a,
         "lineaire-vergelijking-b": b,
@@ -184,10 +269,10 @@ def set_input_values(a, b, y):
     for input_id, value in input_values.items():
         input_element = get(input_id)  # ty:ignore[unresolved-reference]  # noqa: F821
         if input_element:
-            input_element.value = format_value(value)
+            input_element.value = lineaire_format_value(value)
 
 
-def show_panel(panel_name):
+def lineaire_show_panel(panel_name):
     panel_pairs = (
         ("tool", "lineaire-vergelijking-oplosser-tool-tab", "lineaire-vergelijking-oplosser-tool-panel"),
         ("history", "lineaire-vergelijking-oplosser-history-tab", "lineaire-vergelijking-oplosser-history-panel"),
@@ -206,7 +291,7 @@ def show_panel(panel_name):
             panel.hidden = not is_active
 
 
-def normalize_history_entry(entry):
+def lineaire_normalize_history_entry(entry):
     if not isinstance(entry, dict):
         return None
 
@@ -220,12 +305,12 @@ def normalize_history_entry(entry):
     return normalized_entry
 
 
-def sanitize_history_entries(history_entries):
+def lineaire_sanitize_history_entries(history_entries):
     sanitized_entries = []
     changed = False
 
     for entry in history_entries:
-        normalized_entry = normalize_history_entry(entry)
+        normalized_entry = lineaire_normalize_history_entry(entry)
         if not normalized_entry:
             changed = True
             continue
@@ -238,8 +323,8 @@ def sanitize_history_entries(history_entries):
     return sanitized_entries, changed
 
 
-def render_history_value(label, value):
-    icon_class = HISTORY_VALUE_ICONS.get(label, "")
+def lineaire_render_history_value(label, value):
+    icon_class = LINEAIRE_HISTORY_VALUE_ICONS.get(label, "")
 
     return f"""
         <div class="flex items-center gap-2 text-sm font-semibold">
@@ -249,15 +334,15 @@ def render_history_value(label, value):
     """
 
 
-def render_history_entry(entry, index):
+def lineaire_render_history_entry(entry, index):
     input_values = "".join(
         (
-            render_history_value("a", format_value(entry["a"])),
-            render_history_value("b", format_value(entry["b"])),
-            render_history_value("y", format_value(entry["y"])),
+            lineaire_render_history_value("a", lineaire_format_value(entry["a"])),
+            lineaire_render_history_value("b", lineaire_format_value(entry["b"])),
+            lineaire_render_history_value("y", lineaire_format_value(entry["y"])),
         )
     )
-    output_values = render_history_value("x", format_value(entry["x"]))
+    output_values = lineaire_render_history_value("x", lineaire_format_value(entry["x"]))
 
     return f"""
         <article class="card p-0">
@@ -297,7 +382,7 @@ def render_history_entry(entry, index):
     """
 
 
-def render_history_entries(history_entries):
+def lineaire_render_history_entries(history_entries):
     history_list = get("lineaire-vergelijking-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
     empty_state = get("lineaire-vergelijking-history-empty")  # ty:ignore[unresolved-reference]  # noqa: F821
     if not history_list or not empty_state:
@@ -309,51 +394,51 @@ def render_history_entries(history_entries):
         return
 
     history_list.innerHTML = "".join(
-        render_history_entry(entry, index)
+        lineaire_render_history_entry(entry, index)
         for index, entry in enumerate(history_entries)
     )
     empty_state.hidden = True
 
 
-async def sync_history_view():
-    history_entries = await get_tool_history(TOOL_INDEX)  # ty:ignore[unresolved-reference]  # noqa: F821
-    sanitized_entries, changed = sanitize_history_entries(history_entries)
+async def lineaire_sync_history_view():
+    history_entries = await get_tool_history(LINEAIRE_TOOL_INDEX)  # ty:ignore[unresolved-reference]  # noqa: F821
+    sanitized_entries, changed = lineaire_sanitize_history_entries(history_entries)
 
     if changed:
         sanitized_entries = await set_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
-            TOOL_INDEX, sanitized_entries
+            LINEAIRE_TOOL_INDEX, sanitized_entries
         )
 
-    render_history_entries(sanitized_entries)
+    lineaire_render_history_entries(sanitized_entries)
     return sanitized_entries
 
 
-async def restore_history_entry(history_index):
-    history_entries = await sync_history_view()
+async def lineaire_restore_history_entry(history_index):
+    history_entries = await lineaire_sync_history_view()
     if history_index < 0 or history_index >= len(history_entries):
         return
 
     entry = history_entries[history_index]
-    set_input_values(entry["a"], entry["b"], entry["y"])
-    render_result(solve_linear_equation(entry["a"], entry["b"], entry["y"]))
-    show_panel("tool")
+    lineaire_set_input_values(entry["a"], entry["b"], entry["y"])
+    lineaire_render_result(lineaire_solve_linear_equation(entry["a"], entry["b"], entry["y"]))
+    lineaire_show_panel("tool")
 
 
-async def delete_history_entry(history_index):
-    await delete_tool_history_entry(TOOL_INDEX, history_index)  # ty:ignore[unresolved-reference]  # noqa: F821
-    await sync_history_view()
+async def lineaire_delete_history_entry(history_index):
+    await delete_tool_history_entry(LINEAIRE_TOOL_INDEX, history_index)  # ty:ignore[unresolved-reference]  # noqa: F821
+    await lineaire_sync_history_view()
 
 
-async def handle_history_action(action, history_index):
+async def lineaire_handle_history_action(action, history_index):
     if action == "restore":
-        await restore_history_entry(history_index)
+        await lineaire_restore_history_entry(history_index)
         return
 
     if action == "delete":
-        await delete_history_entry(history_index)
+        await lineaire_delete_history_entry(history_index)
 
 
-def on_history_list_click(event):
+def lineaire_on_history_list_click(event):
     history_list = get("lineaire-vergelijking-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
     target = getattr(event, "target", None)
     if not history_list or not target or not hasattr(target, "closest"):
@@ -370,32 +455,32 @@ def on_history_list_click(event):
     except (TypeError, ValueError):
         return
 
-    asyncio.create_task(handle_history_action(history_action, history_index))
+    asyncio.create_task(lineaire_handle_history_action(history_action, history_index))
 
 
 @when("click", "#lineaire-vergelijking-berekenen")
-async def bereken_click(event):
-    values = normalize_input_values(get_input_values())
+async def lineaire_bereken_click(event):
+    values = lineaire_normalize_input_values(lineaire_get_input_values())
     if not values:
         return
 
     a_str, b_str, y_str = values
 
-    error = validate_inputs(a_str, b_str, y_str)
+    error = lineaire_validate_inputs(a_str, b_str, y_str)
     if error:
-        render_result(None, error)
+        lineaire_render_result(None, error)
         return
 
     a = float(a_str)
     b = float(b_str)
     y = float(y_str)
 
-    result = solve_linear_equation(a, b, y)
+    result = lineaire_solve_linear_equation(a, b, y)
 
-    render_result(result)
+    lineaire_render_result(result)
 
     await append_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
-        TOOL_INDEX,
+        LINEAIRE_TOOL_INDEX,
         {
             "a": a,
             "b": b,
@@ -403,22 +488,22 @@ async def bereken_click(event):
             "x": result["x"],
         },
     )
-    await sync_history_view()
+    await lineaire_sync_history_view()
 
 
 @when("click", "#lineaire-vergelijking-oplosser-tool-tab")
-def tool_tab_click(_event):
-    show_panel("tool")
+def lineaire_tool_tab_click(_event):
+    lineaire_show_panel("tool")
 
 
 @when("click", "#lineaire-vergelijking-oplosser-history-tab")
-async def history_tab_click(_event):
-    await sync_history_view()
-    show_panel("history")
+async def lineaire_history_tab_click(_event):
+    await lineaire_sync_history_view()
+    lineaire_show_panel("history")
 
 
 @when("click", "#lineaire-vergelijking-reset")
-def reset_click(event):
+def lineaire_reset_click(event):
     for input_id in (
         "lineaire-vergelijking-a",
         "lineaire-vergelijking-b",
@@ -428,25 +513,26 @@ def reset_click(event):
         if input_element:
             input_element.value = ""
 
-    render_result(None)
+    lineaire_render_result(None)
 
 
-def on_theme_change(_event):
-    if LAST_RESULT:
-        render_result(LAST_RESULT)
+def lineaire_on_theme_change(_event):
+    if LINEAIRE_LAST_RESULT:
+        lineaire_render_result(LINEAIRE_LAST_RESULT)
 
 
-def start():
-    global THEME_CHANGE_PROXY, HISTORY_CLICK_PROXY
+def lineaire_start():
+    global LINEAIRE_THEME_CHANGE_PROXY, LINEAIRE_HISTORY_CLICK_PROXY
 
-    THEME_CHANGE_PROXY = create_proxy(on_theme_change)
-    window.addEventListener("app:themechange", THEME_CHANGE_PROXY)
+    LINEAIRE_THEME_CHANGE_PROXY = create_proxy(lineaire_on_theme_change)
+    window.addEventListener("app:themechange", LINEAIRE_THEME_CHANGE_PROXY)
     history_list = get("lineaire-vergelijking-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
     if history_list:
-        HISTORY_CLICK_PROXY = create_proxy(on_history_list_click)
-        history_list.addEventListener("click", HISTORY_CLICK_PROXY)
-    show_panel("tool")
-    asyncio.create_task(sync_history_view())
+        LINEAIRE_HISTORY_CLICK_PROXY = create_proxy(lineaire_on_history_list_click)
+        history_list.addEventListener("click", LINEAIRE_HISTORY_CLICK_PROXY)
+    lineaire_render_result(None)
+    lineaire_show_panel("tool")
+    asyncio.create_task(lineaire_sync_history_view())
 
 
-start()
+lineaire_start()
