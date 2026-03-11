@@ -36,7 +36,7 @@ async def sync_settings_state():
     global PENDING_THEME, PENDING_SIDEBAR_EDGE_HOVER
     PENDING_THEME = normalize_theme(await read_saved_theme())  # ty:ignore[unresolved-reference]  # noqa: F821
     PENDING_SIDEBAR_EDGE_HOVER = normalize_sidebar_edge_hover(
-        await read_sidebar_edge_hover_enabled() # ty:ignore[unresolved-reference]  # noqa: F821
+        await read_sidebar_edge_hover_enabled()  # ty:ignore[unresolved-reference]  # noqa: F821
     )
     set_theme_select_value(PENDING_THEME)
     set_sidebar_edge_hover_switch_value(PENDING_SIDEBAR_EDGE_HOVER)

@@ -197,6 +197,25 @@ async def get_tool_history(tool_index):
     return histories_value[tool_index]
 
 
+async def set_tool_history(tool_index, entries):
+    if not isinstance(tool_index, int) or tool_index < 0:
+        return []
+
+    if not isinstance(entries, list):
+        return []
+
+    histories_value = await read_histories()
+
+    while len(histories_value) <= tool_index:
+        histories_value.append([])
+
+    normalized_entries = [entry for entry in entries if isinstance(entry, dict)]
+    histories_value[tool_index] = normalized_entries
+
+    await set_value(HISTORIES_STORAGE_KEY, histories_value)
+    return normalized_entries
+
+
 async def append_tool_history(tool_index, entry, limit=100):
     if not isinstance(tool_index, int) or tool_index < 0:
         return []
@@ -214,6 +233,28 @@ async def append_tool_history(tool_index, entry, limit=100):
 
     if isinstance(limit, int) and limit > 0 and len(history_bucket) > limit:
         del history_bucket[: len(history_bucket) - limit]
+
+    await set_value(HISTORIES_STORAGE_KEY, histories_value)
+    return history_bucket
+
+
+async def delete_tool_history_entry(tool_index, entry_index):
+    if not isinstance(tool_index, int) or tool_index < 0:
+        return []
+
+    if not isinstance(entry_index, int) or entry_index < 0:
+        return []
+
+    histories_value = await read_histories()
+
+    if tool_index >= len(histories_value):
+        return []
+
+    history_bucket = histories_value[tool_index]
+    if entry_index >= len(history_bucket):
+        return history_bucket
+
+    del history_bucket[entry_index]
 
     await set_value(HISTORIES_STORAGE_KEY, histories_value)
     return history_bucket

@@ -11,6 +11,7 @@
     >
         <button
             type="button"
+            id="lineaire-vergelijking-oplosser-tool-tab"
             role="tab"
             aria-selected="true"
             aria-controls="lineaire-vergelijking-oplosser-tool-panel"
@@ -22,6 +23,7 @@
         </button>
         <button
             type="button"
+            id="lineaire-vergelijking-oplosser-history-tab"
             role="tab"
             aria-selected="false"
             aria-controls="lineaire-vergelijking-oplosser-history-panel"
@@ -144,10 +146,18 @@
     role="tabpanel"
     hidden
 >
-    <article class="card">
-        <section>
-            <h2>lineaire vergelijking oplosser history</h2>
-            <p>No history yet.</p>
-        </section>
-    </article>
+    <div
+        id="lineaire-vergelijking-history-empty"
+        class="mb-3 flex w-full justify-center transition-transform duration-200 ease-in-out motion-reduce:transition-none md:[#app-sidebar[aria-hidden=false]_~_main_&]:-translate-x-28"
+    >
+        <article
+            class="card w-full max-w-sm py-3 text-center text-base-content/60"
+        >
+            <p>Nog geen geschiedenis.</p>
+        </article>
+    </div>
+    <div
+        id="lineaire-vergelijking-history-list"
+        class="flex flex-col gap-3"
+    ></div>
 </section>
