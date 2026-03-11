@@ -3,51 +3,43 @@ from html import escape
 
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
 import numpy as np  # ty:ignore[unresolved-import]
-from pyscript import display, when, window
-from pyscript.ffi import create_proxy
+from pyscript import when, window
 
 CIJFER_TOOL_INDEX = 2
 MINIMUM_ROW_COUNT = 2
 CIJFER_LAST_RESULT = None
-CIJFER_THEME_CHANGE_PROXY = None
-CIJFER_GRADE_INPUT_PROXY = None
-CIJFER_GRADE_KEYDOWN_PROXY = None
-CIJFER_GRADE_CLICK_PROXY = None
-CIJFER_HISTORY_CLICK_PROXY = None
+CIJFER_EVENT_PROXIES = []
 
-
-def cijfer_clear_plot_output():
-    plt.close("all")
-
-    chart = get("cijfer-calculator-chart")  # ty:ignore[unresolved-reference]  # noqa: F821
-    if chart:
-        chart.innerHTML = ""
-
-
-def cijfer_normalize_decimal_string(value):
-    return str(value or "").strip().replace(".", ",")
-
-
-def cijfer_parse_decimal_string(value):
-    normalized_value = cijfer_normalize_decimal_string(value)
-    if not normalized_value:
-        return None
-
-    return float(normalized_value.replace(",", "."))
+CIJFER_RESULT_CONTAINER_ID = "cijfer-calculator-result"
+CIJFER_CHART_TARGET_ID = "cijfer-calculator-chart"
+CIJFER_PANEL_CONFIGS = (
+    ("tool", "cijfer-calculator-tool-tab", "cijfer-calculator-tool-panel"),
+    (
+        "history",
+        "cijfer-calculator-history-tab",
+        "cijfer-calculator-history-panel",
+    ),
+)
 
 
 def cijfer_format_value(value):
-    if value is None:
-        return "-"
+    return format_number(value, decimal_separator=",", empty_value="-")  # ty:ignore[unresolved-reference]  # noqa: F821
 
-    if float(value).is_integer():
-        return str(int(value))
 
-    return f"{value:.2f}".rstrip("0").rstrip(".").replace(".", ",")
+def cijfer_normalize_decimal_value(value):
+    return normalize_decimal_input(value, decimal_separator=",")  # ty:ignore[unresolved-reference]  # noqa: F821
+
+
+def cijfer_parse_decimal_value(value):
+    return parse_number(value)  # ty:ignore[unresolved-reference]  # noqa: F821
+
+
+def cijfer_clear_plot_output():
+    clear_matplotlib_target(CIJFER_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_build_grade_row_markup(index, value=""):
-    safe_value = escape(cijfer_normalize_decimal_string(value), quote=True)
+    safe_value = escape(cijfer_normalize_decimal_value(value), quote=True)
     row_number = index + 1
 
     return f"""
@@ -81,7 +73,7 @@ def cijfer_build_grade_row_markup(index, value=""):
 
 
 def cijfer_normalize_grade_row_values(values):
-    normalized_values = [cijfer_normalize_decimal_string(value) for value in values]
+    normalized_values = [cijfer_normalize_decimal_value(value) for value in values]
 
     while normalized_values and not normalized_values[-1]:
         normalized_values.pop()
@@ -107,7 +99,10 @@ def cijfer_get_grade_inputs():
 
 
 def cijfer_get_grade_values():
-    return [cijfer_normalize_decimal_string(input_element.value) for input_element in cijfer_get_grade_inputs()]
+    return [
+        cijfer_normalize_decimal_value(input_element.value)
+        for input_element in cijfer_get_grade_inputs()
+    ]
 
 
 def cijfer_get_grade_input(index):
@@ -149,7 +144,11 @@ def cijfer_get_grade_input_selection(input_element):
 
 
 def cijfer_restore_grade_input_selection(input_element, selection):
-    if not input_element or selection is None or not hasattr(input_element, "setSelectionRange"):
+    if (
+        not input_element
+        or selection is None
+        or not hasattr(input_element, "setSelectionRange")
+    ):
         return
 
     selection_start, selection_end = selection
@@ -170,12 +169,14 @@ def cijfer_render_grade_rows(values, focus_index=None, select=False, selection=N
         for index, value in enumerate(normalized_values)
     )
 
-    if focus_index is not None:
-        clamped_index = max(0, min(focus_index, len(normalized_values) - 1))
-        if cijfer_focus_grade_input(clamped_index, select=select):
-            cijfer_restore_grade_input_selection(
-                cijfer_get_grade_input(clamped_index), selection if not select else None
-            )
+    if focus_index is None:
+        return
+
+    clamped_index = max(0, min(focus_index, len(normalized_values) - 1))
+    if cijfer_focus_grade_input(clamped_index, select=select):
+        cijfer_restore_grade_input_selection(
+            cijfer_get_grade_input(clamped_index), selection if not select else None
+        )
 
 
 def cijfer_sync_grade_rows(focus_index=None):
@@ -184,7 +185,9 @@ def cijfer_sync_grade_rows(focus_index=None):
     selection = None
 
     if focus_index is not None:
-        selection = cijfer_get_grade_input_selection(cijfer_get_grade_input(focus_index))
+        selection = cijfer_get_grade_input_selection(
+            cijfer_get_grade_input(focus_index)
+        )
 
     if current_values != normalized_values:
         cijfer_render_grade_rows(
@@ -194,22 +197,14 @@ def cijfer_sync_grade_rows(focus_index=None):
         )
 
 
-def cijfer_get_goal_input():
-    return get("cijfer-calculator-doel")  # ty:ignore[unresolved-reference]  # noqa: F821
-
-
 def cijfer_get_goal_value():
-    goal_input = cijfer_get_goal_input()
-    if not goal_input:
-        return ""
-
-    return cijfer_normalize_decimal_string(goal_input.value)
+    return cijfer_normalize_decimal_value(
+        read_text_input_value("cijfer-calculator-doel")  # ty:ignore[unresolved-reference]  # noqa: F821
+    )
 
 
 def cijfer_set_goal_value(value):
-    goal_input = cijfer_get_goal_input()
-    if goal_input:
-        goal_input.value = cijfer_normalize_decimal_string(value)
+    set_element_value("cijfer-calculator-doel", cijfer_normalize_decimal_value(value))  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_read_form_values():
@@ -224,7 +219,7 @@ def cijfer_validate_inputs(grade_values, goal_value):
             continue
 
         try:
-            parsed_value = cijfer_parse_decimal_string(value)
+            parsed_value = cijfer_parse_decimal_value(value)
         except ValueError:
             return None, f"Voer een geldig cijfer in op rij {index}."
 
@@ -236,7 +231,7 @@ def cijfer_validate_inputs(grade_values, goal_value):
     goal = None
     if goal_value:
         try:
-            goal = cijfer_parse_decimal_string(goal_value)
+            goal = cijfer_parse_decimal_value(goal_value)
         except ValueError:
             return None, "Voer een geldig gewenst gemiddelde in."
 
@@ -247,8 +242,6 @@ def cijfer_calculate_result(grades, goal=None):
     total = sum(grades)
     count = len(grades)
     average = total / count
-    min_value = min(grades)
-    max_value = max(grades)
     required_next_grade = None
 
     if goal is not None:
@@ -260,36 +253,10 @@ def cijfer_calculate_result(grades, goal=None):
         "total": total,
         "count": count,
         "average": average,
-        "min": min_value,
-        "max": max_value,
+        "min": min(grades),
+        "max": max(grades),
         "required_next_grade": required_next_grade,
     }
-
-
-def cijfer_render_empty_result(message):
-    result_container = get("cijfer-calculator-result")  # ty:ignore[unresolved-reference]  # noqa: F821
-    if not result_container:
-        return
-
-    result_container.innerHTML = f"""
-        <div class="flex h-full min-h-96 items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/60 p-6 text-center text-base-content/60">
-            {escape(message)}
-        </div>
-    """
-
-
-def cijfer_render_summary_card(title, value, icon_class, detail=""):
-    return f"""
-        <article class="card gap-0 p-0">
-            <section class="p-4">
-                <div class="flex items-center gap-2 text-sm font-semibold text-base-content/60">
-                    <i class="{icon_class} size-4" aria-hidden="true"></i>
-                    <span class="truncate">{title}</span>
-                </div>
-                <p class="mt-3 text-base">{value}</p>
-            </section>
-        </article>
-    """
 
 
 def cijfer_render_goal_card(result):
@@ -298,28 +265,17 @@ def cijfer_render_goal_card(result):
     if goal is None or required_next_grade is None:
         return ""
 
-    goal_detail = cijfer_format_value(goal)
     if result["average"] >= goal:
-        return cijfer_render_summary_card(
+        return render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
             "Doelstatus",
             "Behaald",
             "icon-[tabler--target-arrow]",
-            f"Je huidige gemiddelde ligt al op of boven {cijfer_format_value(goal)}.",
         )
 
-    if required_next_grade > 10:
-        return cijfer_render_summary_card(
-            "Volgend cijfer",
-            cijfer_format_value(required_next_grade),
-            "icon-[tabler--chart-line]",
-            f"{goal_detail}. Met een 10 haal je dit doel nog niet in een extra cijfer.",
-        )
-
-    return cijfer_render_summary_card(
+    return render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
         "Volgend cijfer",
         cijfer_format_value(required_next_grade),
         "icon-[tabler--chart-line]",
-        goal_detail,
     )
 
 
@@ -328,13 +284,16 @@ def cijfer_render_result(result=None, error=None):
 
     if error or not result:
         CIJFER_LAST_RESULT = None
-        cijfer_clear_plot_output()
-        cijfer_render_empty_result(error or "Vul je cijfers in en klik op berekenen.")
+        render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+            CIJFER_RESULT_CONTAINER_ID,
+            error or "Vul je cijfers in en klik op berekenen.",
+            clear_plot=cijfer_clear_plot_output,
+        )
         return
 
     CIJFER_LAST_RESULT = result
 
-    result_container = get("cijfer-calculator-result")  # ty:ignore[unresolved-reference]  # noqa: F821
+    result_container = get(CIJFER_RESULT_CONTAINER_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
     if not result_container:
         return
 
@@ -342,21 +301,17 @@ def cijfer_render_result(result=None, error=None):
     average = result["average"]
     total = result["total"]
     count = result["count"]
-    min_value = result["min"]
-    max_value = result["max"]
 
     summary_cards = [
-        cijfer_render_summary_card(
+        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
             "Gemiddelde",
             cijfer_format_value(average),
             "icon-[tabler--calculator]",
-            f"{cijfer_format_value(min_value)} - {cijfer_format_value(max_value)}",
         ),
-        cijfer_render_summary_card(
+        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
             "Totaal",
             cijfer_format_value(total),
             "icon-[tabler--plus]",
-            "Som van alle ingevulde cijfers.",
         ),
     ]
 
@@ -367,11 +322,11 @@ def cijfer_render_result(result=None, error=None):
     result_container.innerHTML = f"""
         <div class="space-y-4">
             <div
-                id="cijfer-calculator-chart"
+                id="{CIJFER_CHART_TARGET_ID}"
                 class="flex min-h-80 items-center justify-center overflow-hidden [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:object-contain"
             ></div>
             <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-2 xl:[&:has(>article:nth-child(3):last-child)]:grid-cols-3">
-                {''.join(summary_cards)}
+                {"".join(summary_cards)}
             </div>
         </div>
     """
@@ -435,12 +390,15 @@ def cijfer_render_result(result=None, error=None):
     ax.grid(True, axis="y", color=theme["grid_color"], alpha=0.25)
     ax.set_axisbelow(True)
 
-    display(fig, target="cijfer-calculator-chart", append=False)
-    plt.close(fig)
+    display_matplotlib_figure(fig, CIJFER_CHART_TARGET_ID, append=False)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_set_grade_values(values, focus_index=None, select=False):
-    cijfer_render_grade_rows([cijfer_format_value(value) for value in values], focus_index, select)
+    cijfer_render_grade_rows(
+        [cijfer_format_value(value) for value in values],
+        focus_index=focus_index,
+        select=select,
+    )
 
 
 def cijfer_set_form_values(grades, goal=None, focus_index=None):
@@ -449,22 +407,7 @@ def cijfer_set_form_values(grades, goal=None, focus_index=None):
 
 
 def cijfer_show_panel(panel_name):
-    panel_pairs = (
-        ("tool", "cijfer-calculator-tool-tab", "cijfer-calculator-tool-panel"),
-        ("history", "cijfer-calculator-history-tab", "cijfer-calculator-history-panel"),
-    )
-
-    for name, tab_id, panel_id in panel_pairs:
-        is_active = panel_name == name
-        tab = get(tab_id)  # ty:ignore[unresolved-reference]  # noqa: F821
-        panel = get(panel_id)  # ty:ignore[unresolved-reference]  # noqa: F821
-
-        if tab:
-            tab.setAttribute("aria-selected", "true" if is_active else "false")
-            tab.setAttribute("tabindex", "0" if is_active else "-1")
-
-        if panel:
-            panel.hidden = not is_active
+    show_tab_panel(panel_name, CIJFER_PANEL_CONFIGS)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_normalize_history_entry(entry):
@@ -493,27 +436,10 @@ def cijfer_normalize_history_entry(entry):
     return {"grades": normalized_grades, "goal": normalized_goal}
 
 
-def cijfer_sanitize_history_entries(history_entries):
-    sanitized_entries = []
-    changed = False
-
-    for entry in history_entries:
-        normalized_entry = cijfer_normalize_history_entry(entry)
-        if not normalized_entry:
-            changed = True
-            continue
-
-        if entry != normalized_entry:
-            changed = True
-
-        sanitized_entries.append(normalized_entry)
-
-    return sanitized_entries, changed
-
-
 def cijfer_render_grade_badges(grades):
     return "".join(
-        f'<span class="badge-outline">{cijfer_format_value(grade)}</span>' for grade in grades
+        f'<span class="badge-outline">{cijfer_format_value(grade)}</span>'
+        for grade in grades
     )
 
 
@@ -531,10 +457,11 @@ def cijfer_render_history_entry(entry, index):
             f'<span class="badge-secondary">Doel {cijfer_format_value(result["goal"])} </span>'
         )
 
-    if result["required_next_grade"] is not None and result["average"] < result["goal"]:
-        output_badges.append(
-            f'<span class="badge-secondary">Volgende {cijfer_format_value(result["required_next_grade"])} </span>'
-        )
+    if result["required_next_grade"] is not None and result["goal"] is not None:
+        if result["average"] < result["goal"]:
+            output_badges.append(
+                f'<span class="badge-secondary">Volgende {cijfer_format_value(result["required_next_grade"])} </span>'
+            )
 
     return f"""
         <article class="card p-0">
@@ -543,13 +470,13 @@ def cijfer_render_history_entry(entry, index):
                     <div class="flex items-center gap-2">
                         <span class="badge-outline">Cijfers</span>
                     </div>
-                    <div class="flex flex-wrap gap-2">{cijfer_render_grade_badges(entry['grades'])}</div>
+                    <div class="flex flex-wrap gap-2">{cijfer_render_grade_badges(entry["grades"])}</div>
                 </div>
                 <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
                     <div class="flex items-center gap-2">
                         <span class="badge-secondary">Resultaat</span>
                     </div>
-                    <div class="flex flex-wrap gap-2">{''.join(output_badges)}</div>
+                    <div class="flex flex-wrap gap-2">{"".join(output_badges)}</div>
                 </div>
                 <div class="flex shrink-0 items-center gap-2 self-center">
                     <button
@@ -575,77 +502,20 @@ def cijfer_render_history_entry(entry, index):
 
 
 def cijfer_render_history_entries(history_entries):
-    history_list = get("cijfer-calculator-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
-    empty_state = get("cijfer-calculator-history-empty")  # ty:ignore[unresolved-reference]  # noqa: F821
-    if not history_list or not empty_state:
-        return
-
-    if not history_entries:
-        history_list.innerHTML = ""
-        empty_state.hidden = False
-        return
-
-    history_list.innerHTML = "".join(
-        cijfer_render_history_entry(entry, index)
-        for index, entry in enumerate(history_entries)
+    render_history_list(  # ty:ignore[unresolved-reference]  # noqa: F821
+        "cijfer-calculator-history-list",
+        "cijfer-calculator-history-empty",
+        history_entries,
+        cijfer_render_history_entry,
     )
-    empty_state.hidden = True
-
-
-async def cijfer_sync_history_view():
-    history_entries = await get_tool_history(CIJFER_TOOL_INDEX)  # ty:ignore[unresolved-reference]  # noqa: F821
-    sanitized_entries, changed = cijfer_sanitize_history_entries(history_entries)
-
-    if changed:
-        sanitized_entries = await set_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
-            CIJFER_TOOL_INDEX, sanitized_entries
-        )
-
-    cijfer_render_history_entries(sanitized_entries)
-    return sanitized_entries
-
-
-async def cijfer_restore_history_entry(history_index):
-    history_entries = await cijfer_sync_history_view()
-    if history_index < 0 or history_index >= len(history_entries):
-        return
-
-    entry = history_entries[history_index]
-    cijfer_set_form_values(entry["grades"], entry.get("goal"), focus_index=0)
-    cijfer_render_result(cijfer_calculate_result(entry["grades"], entry.get("goal")))
-    cijfer_show_panel("tool")
-
-
-async def cijfer_delete_history_entry(history_index):
-    await delete_tool_history_entry(CIJFER_TOOL_INDEX, history_index)  # ty:ignore[unresolved-reference]  # noqa: F821
-    await cijfer_sync_history_view()
-
-
-async def cijfer_handle_history_action(action, history_index):
-    if action == "restore":
-        await cijfer_restore_history_entry(history_index)
-        return
-
-    if action == "delete":
-        await cijfer_delete_history_entry(history_index)
 
 
 def cijfer_get_event_grade_input(event):
-    target = getattr(event, "target", None)
-    if not target or not hasattr(target, "closest"):
-        return None
-
-    return target.closest("[data-grade-input]")
+    return get_delegated_target(event, "[data-grade-input]")  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_get_row_index(element):
-    if not element:
-        return None
-
-    try:
-        return int(element.dataset.gradeIndex)
-    except (AttributeError, TypeError, ValueError):
-        return None
+    return get_dataset_int(element, "gradeIndex")  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def cijfer_move_grade_focus(current_index, backwards=False):
@@ -653,11 +523,9 @@ def cijfer_move_grade_focus(current_index, backwards=False):
         return False
 
     if backwards:
-        return (
-            cijfer_focus_grade_input(current_index - 1, select=True)
-            if current_index > 0
-            else False
-        )
+        if current_index <= 0:
+            return False
+        return cijfer_focus_grade_input(current_index - 1, select=True)
 
     current_values = cijfer_get_grade_values()
     normalized_values = cijfer_normalize_grade_row_values(current_values)
@@ -666,7 +534,6 @@ def cijfer_move_grade_focus(current_index, backwards=False):
         cijfer_render_grade_rows(normalized_values, focus_index=current_index)
 
     next_index = current_index + 1
-
     if next_index >= len(normalized_values):
         normalized_values.append("")
         cijfer_render_grade_rows(normalized_values, focus_index=next_index, select=True)
@@ -680,7 +547,7 @@ def cijfer_on_grade_input(event):
     if not target:
         return
 
-    normalized_value = cijfer_normalize_decimal_string(target.value)
+    normalized_value = cijfer_normalize_decimal_value(target.value)
     if target.value != normalized_value:
         target.value = normalized_value
 
@@ -705,20 +572,14 @@ def cijfer_on_grade_keydown(event):
 
 def cijfer_on_grade_click(event):
     rows_container = cijfer_get_grade_rows_container()
-    target = getattr(event, "target", None)
-    if not rows_container or not target or not hasattr(target, "closest"):
-        return
-
-    remove_button = target.closest("[data-grade-remove]")
-    if not remove_button or not rows_container.contains(remove_button):
+    remove_button = get_delegated_target(event, "[data-grade-remove]", rows_container)  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not remove_button:
         return
 
     row_index = cijfer_get_row_index(remove_button)
-    if row_index is None:
-        return
-
     grade_values = cijfer_get_grade_values()
-    if row_index < 0 or row_index >= len(grade_values):
+
+    if row_index is None or row_index < 0 or row_index >= len(grade_values):
         return
 
     del grade_values[row_index]
@@ -726,28 +587,52 @@ def cijfer_on_grade_click(event):
 
 
 def cijfer_on_history_list_click(event):
-    history_list = get("cijfer-calculator-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
-    target = getattr(event, "target", None)
-    if not history_list or not target or not hasattr(target, "closest"):
-        return
-
-    action_button = target.closest("[data-history-action]")
-    if not action_button or not history_list.contains(action_button):
-        return
-
-    history_action = action_button.dataset.historyAction
-
-    try:
-        history_index = int(action_button.dataset.historyIndex)
-    except (TypeError, ValueError):
-        return
-
-    asyncio.create_task(cijfer_handle_history_action(history_action, history_index))
+    dispatch_history_click(  # ty:ignore[unresolved-reference]  # noqa: F821
+        event,
+        get("cijfer-calculator-history-list"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        cijfer_handle_history_action,
+    )
 
 
 def cijfer_on_theme_change(_event):
     if CIJFER_LAST_RESULT:
         cijfer_render_result(CIJFER_LAST_RESULT)
+
+
+async def cijfer_sync_history_view():
+    return await sync_tool_history_view(  # ty:ignore[unresolved-reference]  # noqa: F821
+        CIJFER_TOOL_INDEX,
+        cijfer_normalize_history_entry,
+        cijfer_render_history_entries,
+    )
+
+
+async def cijfer_restore_history_entry(history_index):
+    history_entries = await cijfer_sync_history_view()
+    if history_index < 0 or history_index >= len(history_entries):
+        return
+
+    entry = history_entries[history_index]
+    cijfer_set_form_values(entry["grades"], entry.get("goal"), focus_index=0)
+    cijfer_render_result(cijfer_calculate_result(entry["grades"], entry.get("goal")))
+    cijfer_show_panel("tool")
+
+
+async def cijfer_delete_history_entry(history_index):
+    await delete_tool_history_and_refresh(  # ty:ignore[unresolved-reference]  # noqa: F821
+        CIJFER_TOOL_INDEX,
+        history_index,
+        cijfer_sync_history_view,
+    )
+
+
+async def cijfer_handle_history_action(action, history_index):
+    if action == "restore":
+        await cijfer_restore_history_entry(history_index)
+        return
+
+    if action == "delete":
+        await cijfer_delete_history_entry(history_index)
 
 
 @when("click", "#cijfer-calculator-berekenen")
@@ -788,27 +673,32 @@ def cijfer_reset_click(_event):
 
 
 def cijfer_start():
-    global CIJFER_THEME_CHANGE_PROXY, CIJFER_GRADE_INPUT_PROXY, CIJFER_GRADE_KEYDOWN_PROXY, CIJFER_GRADE_CLICK_PROXY, CIJFER_HISTORY_CLICK_PROXY
+    global CIJFER_EVENT_PROXIES
 
     cijfer_render_grade_rows([])
 
     rows_container = cijfer_get_grade_rows_container()
     history_list = get("cijfer-calculator-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
 
-    CIJFER_THEME_CHANGE_PROXY = create_proxy(cijfer_on_theme_change)
-    window.addEventListener("app:themechange", CIJFER_THEME_CHANGE_PROXY)
+    CIJFER_EVENT_PROXIES = [
+        add_proxy_listener(window, "app:themechange", cijfer_on_theme_change),  # ty:ignore[unresolved-reference]  # noqa: F821
+    ]
 
     if rows_container:
-        CIJFER_GRADE_INPUT_PROXY = create_proxy(cijfer_on_grade_input)
-        CIJFER_GRADE_KEYDOWN_PROXY = create_proxy(cijfer_on_grade_keydown)
-        CIJFER_GRADE_CLICK_PROXY = create_proxy(cijfer_on_grade_click)
-        rows_container.addEventListener("input", CIJFER_GRADE_INPUT_PROXY)
-        rows_container.addEventListener("keydown", CIJFER_GRADE_KEYDOWN_PROXY)
-        rows_container.addEventListener("click", CIJFER_GRADE_CLICK_PROXY)
+        CIJFER_EVENT_PROXIES.extend(
+            [
+                add_proxy_listener(rows_container, "input", cijfer_on_grade_input),  # ty:ignore[unresolved-reference]  # noqa: F821
+                add_proxy_listener(rows_container, "keydown", cijfer_on_grade_keydown),  # ty:ignore[unresolved-reference]  # noqa: F821
+                add_proxy_listener(rows_container, "click", cijfer_on_grade_click),  # ty:ignore[unresolved-reference]  # noqa: F821
+            ]
+        )
 
     if history_list:
-        CIJFER_HISTORY_CLICK_PROXY = create_proxy(cijfer_on_history_list_click)
-        history_list.addEventListener("click", CIJFER_HISTORY_CLICK_PROXY)
+        CIJFER_EVENT_PROXIES.append(
+            add_proxy_listener(history_list, "click", cijfer_on_history_list_click)  # ty:ignore[unresolved-reference]  # noqa: F821
+        )
+
+    CIJFER_EVENT_PROXIES = [proxy for proxy in CIJFER_EVENT_PROXIES if proxy]
 
     cijfer_show_panel("tool")
     asyncio.create_task(cijfer_sync_history_view())

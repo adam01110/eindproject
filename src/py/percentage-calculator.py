@@ -1,13 +1,11 @@
 import asyncio
 
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
-from pyscript import display, when, window
-from pyscript.ffi import create_proxy
+from pyscript import when, window
 
 PERCENTAGE_TOOL_INDEX = 3
 PERCENTAGE_LAST_RESULT = None
-PERCENTAGE_THEME_CHANGE_PROXY = None
-PERCENTAGE_HISTORY_CLICK_PROXY = None
+PERCENTAGE_EVENT_PROXIES = []
 
 PERCENTAGE_MODE_CONFIGS = {
     "deel-van-totaal": {
@@ -103,64 +101,14 @@ PERCENTAGE_PANEL_CONFIGS = (
 )
 
 
-def percentage_dom(element_id):
-    return get(element_id)  # noqa: F821
-
-
-def percentage_apply_chart_theme(fig, ax):
-    return apply_matplotlib_theme(fig, ax)  # noqa: F821
-
-
-async def percentage_get_history_entries():
-    return await get_tool_history(PERCENTAGE_TOOL_INDEX)  # noqa: F821
-
-
-async def percentage_set_history_entries(entries):
-    return await set_tool_history(PERCENTAGE_TOOL_INDEX, entries)  # noqa: F821
-
-
-async def percentage_append_history_entry(entry):
-    return await append_tool_history(PERCENTAGE_TOOL_INDEX, entry)  # noqa: F821
-
-
-async def percentage_delete_history_item(history_index):
-    return await delete_tool_history_entry(PERCENTAGE_TOOL_INDEX, history_index)  # noqa: F821
-
-
-def percentage_get_mode_config(mode):
-    return PERCENTAGE_MODE_CONFIGS.get(
-        mode, PERCENTAGE_MODE_CONFIGS[PERCENTAGE_DEFAULT_MODE]
-    )
-
-
-def percentage_get_mode_value():
-    mode_select = percentage_dom("percentage-calculator-mode")
-    if not mode_select or not mode_select.value:
-        return PERCENTAGE_DEFAULT_MODE
-
-    return mode_select.value
-
-
 def percentage_format_value(value):
-    numeric_value = float(value)
-    if numeric_value.is_integer():
-        return str(int(numeric_value))
-
-    return f"{numeric_value:.2f}".rstrip("0").rstrip(".")
+    return format_number(value)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def percentage_format_percent(value, include_sign=False):
     numeric_value = float(value)
     sign = "+" if include_sign and numeric_value > 0 else ""
     return f"{sign}{percentage_format_value(numeric_value)}%"
-
-
-def percentage_parse_number(value):
-    normalized_value = str(value).strip().replace(",", ".")
-    if not normalized_value:
-        raise ValueError("missing")
-
-    return float(normalized_value)
 
 
 def percentage_parse_iterations(value):
@@ -175,22 +123,30 @@ def percentage_parse_iterations(value):
     return parsed_value
 
 
-def percentage_read_input_value(element_id, default=""):
-    input_element = percentage_dom(element_id)
-    if not input_element:
-        return default
+def percentage_clear_plot_output():
+    clear_matplotlib_target(PERCENTAGE_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
 
-    return input_element.value.strip()
+
+def percentage_get_mode_config(mode):
+    return PERCENTAGE_MODE_CONFIGS.get(
+        mode, PERCENTAGE_MODE_CONFIGS[PERCENTAGE_DEFAULT_MODE]
+    )
+
+
+def percentage_get_mode_value():
+    mode_select = get("percentage-calculator-mode")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if not mode_select or not mode_select.value:
+        return PERCENTAGE_DEFAULT_MODE
+
+    return mode_select.value
 
 
 def percentage_get_input_state():
     return {
         "mode": percentage_get_mode_value(),
-        "value_1": percentage_read_input_value("percentage-calculator-waarde-1"),
-        "value_2": percentage_read_input_value("percentage-calculator-waarde-2"),
-        "iterations": percentage_read_input_value(
-            "percentage-calculator-iterations", "1"
-        ),
+        "value_1": read_text_input_value("percentage-calculator-waarde-1"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        "value_2": read_text_input_value("percentage-calculator-waarde-2"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        "iterations": read_text_input_value("percentage-calculator-iterations", "1"),  # ty:ignore[unresolved-reference]  # noqa: F821
     }
 
 
@@ -242,8 +198,8 @@ def percentage_validate_input_state(state):
         return None, "Vul alle verplichte velden in."
 
     try:
-        value_1 = percentage_parse_number(value_1_raw)
-        value_2 = percentage_parse_number(value_2_raw)
+        value_1 = parse_number(value_1_raw)  # ty:ignore[unresolved-reference]  # noqa: F821
+        value_2 = parse_number(value_2_raw)  # ty:ignore[unresolved-reference]  # noqa: F821
     except ValueError:
         return None, "Voer geldige getallen in."
 
@@ -273,8 +229,6 @@ def percentage_calculate_deel_van_totaal(value_1, value_2, _iterations):
 
     return {
         "mode": "deel-van-totaal",
-        "headline": f"{percentage_format_value(value_1)} is {percentage_format_percent(percentage)} van {percentage_format_value(value_2)}.",
-        "summary": "Je deelt eerst het deel door het totaal en zet die uitkomst daarna om naar procenten.",
         "part": value_1,
         "total": value_2,
         "percentage": percentage,
@@ -282,10 +236,6 @@ def percentage_calculate_deel_van_totaal(value_1, value_2, _iterations):
         "cards": (
             {"label": "Percentage", "value": percentage_format_percent(percentage)},
             {"label": "Rest", "value": percentage_format_percent(remainder_percentage)},
-        ),
-        "steps": (
-            f"Deel het deel door het totaal: {percentage_format_value(value_1)} / {percentage_format_value(value_2)} = {percentage_format_value(ratio)}.",
-            f"Vermenigvuldig met 100: {percentage_format_value(ratio)} x 100 = {percentage_format_percent(percentage)}.",
         ),
         "history_result": percentage,
     }
@@ -297,8 +247,6 @@ def percentage_calculate_korting(value_1, value_2, _iterations):
 
     return {
         "mode": "korting",
-        "headline": f"Na {percentage_format_percent(value_2)} korting blijft {percentage_format_value(new_value)} over.",
-        "summary": "De tool berekent eerst hoeveel het percentage van de oude waarde is en haalt dat bedrag daarna eraf.",
         "old_value": value_1,
         "percentage": value_2,
         "change_amount": discount_amount,
@@ -307,10 +255,6 @@ def percentage_calculate_korting(value_1, value_2, _iterations):
             {"label": "Korting", "value": percentage_format_value(discount_amount)},
             {"label": "Nieuwe waarde", "value": percentage_format_value(new_value)},
         ),
-        "steps": (
-            f"Bereken de korting: {percentage_format_percent(value_2)} van {percentage_format_value(value_1)} = {percentage_format_value(discount_amount)}.",
-            f"Haal de korting eraf: {percentage_format_value(value_1)} - {percentage_format_value(discount_amount)} = {percentage_format_value(new_value)}.",
-        ),
         "history_result": new_value,
     }
 
@@ -318,39 +262,27 @@ def percentage_calculate_korting(value_1, value_2, _iterations):
 def percentage_calculate_stijging(value_1, value_2, iterations):
     current_value = value_1
     progression = [value_1]
-    step_lines = []
 
     for step_index in range(iterations):
         previous_value = current_value
         increase_amount = (value_2 / 100) * previous_value
         current_value = previous_value + increase_amount
         progression.append(current_value)
-        step_lines.append(
-            f"Stap {step_index + 1}: {percentage_format_percent(value_2)} van {percentage_format_value(previous_value)} = {percentage_format_value(increase_amount)}; {percentage_format_value(previous_value)} + {percentage_format_value(increase_amount)} = {percentage_format_value(current_value)}."
-        )
-
-    total_increase = current_value - value_1
-    summary = "De stijging wordt elke keer opnieuw op de nieuwste waarde toegepast."
-    if iterations == 1:
-        summary = "De tool telt het berekende percentage op bij de beginwaarde."
 
     return {
         "mode": "stijging",
-        "headline": f"Na {iterations} keer {percentage_format_percent(value_2)} stijging wordt {percentage_format_value(value_1)} gelijk aan {percentage_format_value(current_value)}.",
-        "summary": summary,
         "start_value": value_1,
         "percentage": value_2,
         "new_value": current_value,
-        "total_increase": total_increase,
+        "total_increase": current_value - value_1,
         "progression": tuple(progression),
         "cards": (
             {
                 "label": "Totale toename",
-                "value": percentage_format_value(total_increase),
+                "value": percentage_format_value(current_value - value_1),
             },
             {"label": "Nieuwe waarde", "value": percentage_format_value(current_value)},
         ),
-        "steps": tuple(step_lines),
         "history_result": current_value,
     }
 
@@ -358,12 +290,9 @@ def percentage_calculate_stijging(value_1, value_2, iterations):
 def percentage_calculate_verschil(value_1, value_2, _iterations):
     change_amount = value_2 - value_1
     percentage_change = (change_amount / value_1) * 100
-    direction = "stijging" if change_amount >= 0 else "daling"
 
     return {
         "mode": "verschil",
-        "headline": f"Van {percentage_format_value(value_1)} naar {percentage_format_value(value_2)} is een {direction} van {percentage_format_percent(abs(percentage_change))}.",
-        "summary": "Je bekijkt eerst het verschil tussen de twee getallen en vergelijkt dat daarna met de beginwaarde.",
         "old_value": value_1,
         "new_value": value_2,
         "change_amount": change_amount,
@@ -372,14 +301,10 @@ def percentage_calculate_verschil(value_1, value_2, _iterations):
             {
                 "label": "Verschil in %",
                 "value": percentage_format_percent(
-                    percentage_change, include_sign=True
+                    percentage_change,
+                    include_sign=True,
                 ),
             },
-        ),
-        "steps": (
-            f"Bereken het verschil: {percentage_format_value(value_2)} - {percentage_format_value(value_1)} = {percentage_format_value(change_amount)}.",
-            f"Deel door de beginwaarde: {percentage_format_value(change_amount)} / {percentage_format_value(value_1)} = {percentage_format_value(change_amount / value_1)}.",
-            f"Vermenigvuldig met 100: {percentage_format_value(change_amount / value_1)} x 100 = {percentage_format_percent(percentage_change, include_sign=True)}.",
         ),
         "history_result": percentage_change,
     }
@@ -414,52 +339,25 @@ def percentage_resolve_result(state):
     return validated_state, result, None
 
 
-def percentage_clear_plot_output():
-    plt.close("all")
-
-    target_div = percentage_dom(PERCENTAGE_CHART_TARGET_ID)
-    if target_div:
-        target_div.innerHTML = ""
-
-
-def percentage_render_result_message(message, classes):
-    percentage_clear_plot_output()
-
-    result_container = percentage_dom(PERCENTAGE_RESULT_CONTAINER_ID)
-    if not result_container:
-        return
-
-    result_container.innerHTML = f'''
-        <div class="{classes}">
-            {message}
-        </div>
-    '''
-
-
 def percentage_render_placeholder():
-    percentage_render_result_message(
+    render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        PERCENTAGE_RESULT_CONTAINER_ID,
         "Kies een berekening, vul de waarden in en klik op berekenen.",
-        "flex h-full min-h-96 items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/60 p-6 text-center text-base-content/60",
+        clear_plot=percentage_clear_plot_output,
     )
 
 
 def percentage_render_error(message):
-    percentage_render_result_message(
+    render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        PERCENTAGE_RESULT_CONTAINER_ID,
         message,
-        "flex h-full min-h-96 items-center justify-center rounded-xl border border-destructive/40 bg-destructive/10 p-6 text-center text-destructive",
+        variant="error",
+        clear_plot=percentage_clear_plot_output,
     )
 
 
 def percentage_render_chart_fallback(message):
-    target_div = percentage_dom(PERCENTAGE_CHART_TARGET_ID)
-    if not target_div:
-        return
-
-    target_div.innerHTML = f"""
-        <div class="flex h-full w-full items-center justify-center rounded-xl border border-dashed border-border/70 bg-background/60 p-6 text-center text-base-content/60">
-            {message}
-        </div>
-    """
+    render_chart_fallback(PERCENTAGE_CHART_TARGET_ID, message)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def percentage_get_chart_data(result, theme):
@@ -508,16 +406,12 @@ def percentage_get_chart_data(result, theme):
 
 
 def percentage_render_matplotlib_chart(result):
-    target_div = percentage_dom(PERCENTAGE_CHART_TARGET_ID)
-    if not target_div:
-        return
-
     if not isinstance(result, dict) or result.get("mode") not in PERCENTAGE_KNOWN_MODES:
         percentage_render_chart_fallback(PERCENTAGE_CHART_FALLBACK_MESSAGE)
         return
 
     fig, ax = plt.subplots(figsize=(6, 4.2))
-    theme = percentage_apply_chart_theme(fig, ax)
+    theme = apply_matplotlib_theme(fig, ax)   # ty:ignore[unresolved-reference]  # noqa: F821
     chart_data = percentage_get_chart_data(result, theme)
 
     if not chart_data or sum(chart_data["values"]) <= 0:
@@ -538,8 +432,7 @@ def percentage_render_matplotlib_chart(result):
     ax.axis("equal")
 
     fig.subplots_adjust(left=0.08, right=0.92, top=0.86, bottom=0.14)
-    display(fig, target=PERCENTAGE_CHART_TARGET_ID)
-    plt.close(fig)
+    display_matplotlib_figure(fig, PERCENTAGE_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def percentage_render_result_card(card):
@@ -559,13 +452,6 @@ def percentage_render_result_card(card):
     )
 
 
-def percentage_render_result_step(step):
-    if step is None:
-        return ""
-
-    return f'<li class="card gap-0 px-4 py-3">{step}</li>'
-
-
 def percentage_normalize_render_items(items):
     if isinstance(items, (list, tuple)):
         return items
@@ -579,27 +465,6 @@ def percentage_get_cards_grid_class(card_count):
     if card_count == 2:
         return "grid gap-3 md:grid-cols-2"
     return "grid gap-3 md:grid-cols-3"
-
-
-def percentage_render_result_details(headline, summary, steps):
-    steps_html = "".join(percentage_render_result_step(step) for step in steps)
-
-    return (
-        '<article class="card gap-0 p-0">'
-        '<section class="p-5">'
-        f'<p class="text-lg font-semibold">{headline}</p>'
-        f'<p class="mt-2 text-sm text-base-content/60">{summary}</p>'
-        "</section>"
-        "</article>"
-        '<article class="card gap-0 p-0">'
-        '<section class="p-5">'
-        '<h3 class="text-base font-semibold">Tussenstappen</h3>'
-        '<ol class="mt-3 space-y-3 text-sm text-base-content/80">'
-        f"{steps_html}"
-        "</ol>"
-        "</section>"
-        "</article>"
-    )
 
 
 def percentage_render_result(result, error=None):
@@ -621,58 +486,36 @@ def percentage_render_result(result, error=None):
         return
 
     PERCENTAGE_LAST_RESULT = result
-    result_container = percentage_dom(PERCENTAGE_RESULT_CONTAINER_ID)
+    result_container = get(PERCENTAGE_RESULT_CONTAINER_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
     if not result_container:
         return
 
-    percentage_clear_plot_output()
     cards = percentage_normalize_render_items(result.get("cards"))
     cards_html = "".join(percentage_render_result_card(card) for card in cards)
-    details_html = ""
-    mode = str(result.get("mode", ""))
-
-    if mode not in PERCENTAGE_KNOWN_MODES:
-        details_html = percentage_render_result_details(
-            str(result.get("headline", "")),
-            str(result.get("summary", "")),
-            percentage_normalize_render_items(result.get("steps")),
-        )
 
     result_container.innerHTML = (
         '<div class="flex h-full flex-col gap-4">'
         '<article class="card gap-0 p-0">'
         '<section class="p-2">'
-        '<div id="percentage-calculator-mpl" '
+        f'<div id="{PERCENTAGE_CHART_TARGET_ID}" '
         'class="flex min-h-80 items-center justify-center overflow-hidden [&_canvas]:size-full [&_canvas]:max-w-full [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:object-contain [&_svg]:size-full [&_svg]:max-w-full"></div>'
         "</section>"
         "</article>"
-        f"{details_html}"
         f'<div class="{percentage_get_cards_grid_class(len(cards))}">'
         f"{cards_html}"
         "</div>"
         "</div>"
     )
 
+    percentage_clear_plot_output()
     percentage_render_matplotlib_chart(result)
-
-
-def percentage_set_text_content(element_id, value):
-    element = percentage_dom(element_id)
-    if element:
-        element.textContent = value
-
-
-def percentage_set_element_value(element_id, value):
-    element = percentage_dom(element_id)
-    if element:
-        element.value = value
 
 
 def percentage_update_mode_input(field_name, field_config):
     base_id = f"percentage-calculator-{field_name}"
-    label = percentage_dom(f"{base_id}-label")
-    input_element = percentage_dom(base_id)
-    help_text = percentage_dom(f"{base_id}-help")
+    label = get(f"{base_id}-label")  # ty:ignore[unresolved-reference]  # noqa: F821
+    input_element = get(base_id)  # ty:ignore[unresolved-reference]  # noqa: F821
+    help_text = get(f"{base_id}-help")  # ty:ignore[unresolved-reference]  # noqa: F821
 
     if label:
         label.textContent = field_config["label"]
@@ -687,59 +530,51 @@ def percentage_update_mode_ui(mode=None):
     active_mode = mode or percentage_get_mode_value()
     mode_config = percentage_get_mode_config(active_mode)
 
-    percentage_set_text_content(
-        "percentage-calculator-mode-description", mode_config["description"]
+    set_text_content(  # ty:ignore[unresolved-reference]  # noqa: F821
+        "percentage-calculator-mode-description",
+        mode_config["description"],
     )
-    percentage_set_text_content("percentage-calculator-formula", mode_config["formula"])
+    set_text_content("percentage-calculator-formula", mode_config["formula"])  # ty:ignore[unresolved-reference]  # noqa: F821
     percentage_update_mode_input("waarde-1", mode_config["value_1"])
     percentage_update_mode_input("waarde-2", mode_config["value_2"])
 
-    iterations_field = percentage_dom("percentage-calculator-iterations-field")
+    iterations_field = get("percentage-calculator-iterations-field")  # ty:ignore[unresolved-reference]  # noqa: F821
     if iterations_field:
         iterations_field.hidden = not mode_config["show_iterations"]
 
-    iterations_input = percentage_dom("percentage-calculator-iterations")
-    if iterations_input and not iterations_input.value.strip():
+    iterations_input = get("percentage-calculator-iterations")  # ty:ignore[unresolved-reference]  # noqa: F821
+    if iterations_input and not str(iterations_input.value or "").strip():
         iterations_input.value = "1"
 
 
 def percentage_set_input_state(state):
     mode = state.get("mode", PERCENTAGE_DEFAULT_MODE)
-    percentage_set_element_value("percentage-calculator-mode", mode)
+    set_element_value("percentage-calculator-mode", mode)  # ty:ignore[unresolved-reference]  # noqa: F821
     percentage_update_mode_ui(mode)
-    percentage_set_element_value(
+    set_element_value(  # ty:ignore[unresolved-reference]  # noqa: F821
         "percentage-calculator-waarde-1",
         percentage_format_value(state.get("value_1", 0)),
     )
-    percentage_set_element_value(
+    set_element_value(  # ty:ignore[unresolved-reference]  # noqa: F821
         "percentage-calculator-waarde-2",
         percentage_format_value(state.get("value_2", 0)),
     )
-    percentage_set_element_value(
-        "percentage-calculator-iterations", str(state.get("iterations", 1))
+    set_element_value(  # ty:ignore[unresolved-reference]  # noqa: F821
+        "percentage-calculator-iterations",
+        state.get("iterations", 1),
     )
 
 
 def percentage_reset_inputs():
-    percentage_set_element_value("percentage-calculator-mode", PERCENTAGE_DEFAULT_MODE)
-    percentage_set_element_value("percentage-calculator-waarde-1", "")
-    percentage_set_element_value("percentage-calculator-waarde-2", "")
-    percentage_set_element_value("percentage-calculator-iterations", "1")
+    set_element_value("percentage-calculator-mode", PERCENTAGE_DEFAULT_MODE)  # ty:ignore[unresolved-reference]  # noqa: F821
+    set_element_value("percentage-calculator-waarde-1", "")  # ty:ignore[unresolved-reference]  # noqa: F821
+    set_element_value("percentage-calculator-waarde-2", "")  # ty:ignore[unresolved-reference]  # noqa: F821
+    set_element_value("percentage-calculator-iterations", "1")  # ty:ignore[unresolved-reference]  # noqa: F821
     percentage_update_mode_ui(PERCENTAGE_DEFAULT_MODE)
 
 
 def percentage_show_panel(panel_name):
-    for name, tab_id, panel_id in PERCENTAGE_PANEL_CONFIGS:
-        is_active = panel_name == name
-        tab = percentage_dom(tab_id)
-        panel = percentage_dom(panel_id)
-
-        if tab:
-            tab.setAttribute("aria-selected", "true" if is_active else "false")
-            tab.setAttribute("tabindex", "0" if is_active else "-1")
-
-        if panel:
-            panel.hidden = not is_active
+    show_tab_panel(panel_name, PERCENTAGE_PANEL_CONFIGS)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
 def percentage_normalize_history_entry(entry):
@@ -770,24 +605,6 @@ def percentage_normalize_history_entry(entry):
     }
 
 
-def percentage_sanitize_history_entries(history_entries):
-    sanitized_entries = []
-    changed = False
-
-    for entry in history_entries:
-        normalized_entry = percentage_normalize_history_entry(entry)
-        if not normalized_entry:
-            changed = True
-            continue
-
-        if entry != normalized_entry:
-            changed = True
-
-        sanitized_entries.append(normalized_entry)
-
-    return sanitized_entries, changed
-
-
 def percentage_build_history_entry(validated_state, result):
     return {
         "mode": validated_state["mode"],
@@ -801,7 +618,8 @@ def percentage_build_history_entry(validated_state, result):
 def percentage_format_history_result(entry):
     if entry["mode"] in {"deel-van-totaal", "verschil"}:
         return percentage_format_percent(
-            entry["result"], include_sign=entry["mode"] == "verschil"
+            entry["result"],
+            include_sign=entry["mode"] == "verschil",
         )
 
     return percentage_format_value(entry["result"])
@@ -841,7 +659,8 @@ def percentage_render_history_entry(entry, index):
         for label, value in percentage_get_history_input_values(entry, mode_config)
     )
     output_value_html = percentage_render_history_value(
-        mode_config["result_label"], percentage_format_history_result(entry)
+        mode_config["result_label"],
+        percentage_format_history_result(entry),
     )
 
     return f'''
@@ -883,32 +702,33 @@ def percentage_render_history_entry(entry, index):
 
 
 def percentage_render_history_entries(history_entries):
-    history_list = percentage_dom("percentage-calculator-history-list")
-    empty_state = percentage_dom("percentage-calculator-history-empty")
-    if not history_list or not empty_state:
-        return
-
-    if not history_entries:
-        history_list.innerHTML = ""
-        empty_state.hidden = False
-        return
-
-    history_list.innerHTML = "".join(
-        percentage_render_history_entry(entry, index)
-        for index, entry in enumerate(history_entries)
+    render_history_list(  # ty:ignore[unresolved-reference]  # noqa: F821
+        "percentage-calculator-history-list",
+        "percentage-calculator-history-empty",
+        history_entries,
+        percentage_render_history_entry,
     )
-    empty_state.hidden = True
+
+
+def percentage_on_history_list_click(event):
+    dispatch_history_click(  # ty:ignore[unresolved-reference]  # noqa: F821
+        event,
+        get("percentage-calculator-history-list"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        percentage_handle_history_action,
+    )
+
+
+def percentage_on_theme_change(_event):
+    if PERCENTAGE_LAST_RESULT:
+        percentage_render_result(PERCENTAGE_LAST_RESULT)
 
 
 async def percentage_sync_history_view():
-    history_entries = await percentage_get_history_entries()
-    sanitized_entries, changed = percentage_sanitize_history_entries(history_entries)
-
-    if changed:
-        sanitized_entries = await percentage_set_history_entries(sanitized_entries)
-
-    percentage_render_history_entries(sanitized_entries)
-    return sanitized_entries
+    return await sync_tool_history_view(  # ty:ignore[unresolved-reference]  # noqa: F821
+        PERCENTAGE_TOOL_INDEX,
+        percentage_normalize_history_entry,
+        percentage_render_history_entries,
+    )
 
 
 async def percentage_restore_history_entry(history_index):
@@ -928,8 +748,11 @@ async def percentage_restore_history_entry(history_index):
 
 
 async def percentage_delete_history_entry(history_index):
-    await percentage_delete_history_item(history_index)
-    await percentage_sync_history_view()
+    await delete_tool_history_and_refresh(  # ty:ignore[unresolved-reference]  # noqa: F821
+        PERCENTAGE_TOOL_INDEX,
+        history_index,
+        percentage_sync_history_view,
+    )
 
 
 async def percentage_handle_history_action(action, history_index):
@@ -939,26 +762,6 @@ async def percentage_handle_history_action(action, history_index):
 
     if action == "delete":
         await percentage_delete_history_entry(history_index)
-
-
-def percentage_on_history_list_click(event):
-    history_list = percentage_dom("percentage-calculator-history-list")
-    target = getattr(event, "target", None)
-    if not history_list or not target or not hasattr(target, "closest"):
-        return
-
-    action_button = target.closest("[data-history-action]")
-    if not action_button or not history_list.contains(action_button):
-        return
-
-    history_action = action_button.dataset.historyAction
-
-    try:
-        history_index = int(action_button.dataset.historyIndex)
-    except (TypeError, ValueError):
-        return
-
-    asyncio.create_task(percentage_handle_history_action(history_action, history_index))
 
 
 @when("change", "#percentage-calculator-mode")
@@ -977,8 +780,9 @@ async def percentage_bereken_click(_event):
         return
 
     percentage_render_result(result)
-    await percentage_append_history_entry(
-        percentage_build_history_entry(validated_state, result)
+    await append_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
+        PERCENTAGE_TOOL_INDEX,
+        percentage_build_history_entry(validated_state, result),
     )
     await percentage_sync_history_view()
 
@@ -1000,23 +804,23 @@ def percentage_reset_click(_event):
     percentage_render_result(None)
 
 
-def percentage_on_theme_change(_event):
-    if PERCENTAGE_LAST_RESULT:
-        percentage_render_result(PERCENTAGE_LAST_RESULT)
-
-
 def percentage_start():
-    global PERCENTAGE_THEME_CHANGE_PROXY, PERCENTAGE_HISTORY_CLICK_PROXY
+    global PERCENTAGE_EVENT_PROXIES
 
     percentage_update_mode_ui(PERCENTAGE_DEFAULT_MODE)
     percentage_render_placeholder()
-    PERCENTAGE_THEME_CHANGE_PROXY = create_proxy(percentage_on_theme_change)
-    window.addEventListener("app:themechange", PERCENTAGE_THEME_CHANGE_PROXY)
 
-    history_list = percentage_dom("percentage-calculator-history-list")
+    PERCENTAGE_EVENT_PROXIES = [
+        add_proxy_listener(window, "app:themechange", percentage_on_theme_change),  # ty:ignore[unresolved-reference]  # noqa: F821
+    ]
+
+    history_list = get("percentage-calculator-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
     if history_list:
-        PERCENTAGE_HISTORY_CLICK_PROXY = create_proxy(percentage_on_history_list_click)
-        history_list.addEventListener("click", PERCENTAGE_HISTORY_CLICK_PROXY)
+        PERCENTAGE_EVENT_PROXIES.append(
+            add_proxy_listener(history_list, "click", percentage_on_history_list_click)  # ty:ignore[unresolved-reference]  # noqa: F821
+        )
+
+    PERCENTAGE_EVENT_PROXIES = [proxy for proxy in PERCENTAGE_EVENT_PROXIES if proxy]
 
     percentage_show_panel("tool")
     asyncio.create_task(percentage_sync_history_view())
