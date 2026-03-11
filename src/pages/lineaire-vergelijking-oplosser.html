@@ -37,14 +37,14 @@
 <section id="lineaire-vergelijking-oplosser-tool-panel" role="tabpanel">
     <!-- Oh my fucking god, what the fuck tailwind. -->
     <div
-        class="grid gap-4 lg:grid-cols-2 lg:[#app-sidebar[aria-hidden=false]_~_main_&]:grid-cols-[calc((100%-1rem)/2+1.25rem)_calc((100%-1rem)/2-1.25rem)]"
+        class="grid items-start gap-4 lg:grid-cols-[calc((100%-1rem)/2+1.5rem)_calc((100%-1rem)/2-1.5rem)]"
     >
-        <article class="card">
-            <section>
+        <article class="card min-h-157.5">
+            <section class="flex h-full flex-col">
                 <h2 class="mb-2">Output</h2>
                 <div
                     id="lineaire-vergelijking-mpl"
-                    class="flex justify-center [&_img]:block [&_img]:max-w-full [&_img]:rounded-xl"
+                    class="flex h-112 items-center justify-center overflow-hidden [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain"
                 ></div>
                 <article class="card mt-4">
                     <section>

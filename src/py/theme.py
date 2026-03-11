@@ -1,6 +1,6 @@
 import asyncio
 
-from pyscript import when
+from pyscript import document, when, window
 
 DEFAULT_THEME = "dark"
 
@@ -18,6 +18,13 @@ def apply_theme(theme_value):
         root.classList.add("dark")
     else:
         root.classList.remove("dark")
+
+
+def dispatch_theme_change(theme_value):
+    event = document.createEvent("Event")
+    event.initEvent("app:themechange", True, True)
+    event.theme = normalize_theme(theme_value)
+    window.dispatchEvent(event)
 
 
 async def read_saved_theme():
@@ -53,6 +60,7 @@ async def set_theme(theme_value, persist=True):
     apply_theme(normalized_theme)
     update_theme_toggle(normalized_theme)
     update_theme_select(normalized_theme)
+    dispatch_theme_change(normalized_theme)
 
     if persist:
         await set_setting("theme", normalized_theme)  # ty:ignore[unresolved-reference]  # noqa: F821

@@ -1,9 +1,11 @@
-
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
 import numpy as np  # ty:ignore[unresolved-import]
-from pyscript import display, when
+from pyscript import display, when, window
+from pyscript.ffi import create_proxy
 
 TOOL_INDEX = 1
+LAST_RESULT = None
+THEME_CHANGE_PROXY = None
 
 
 def clear_plot_output():
@@ -62,33 +64,76 @@ def solve_linear_equation(a, b, y):
     }
 
 
+def format_value(value):
+    if float(value).is_integer():
+        return str(int(value))
+
+    return f"{value:.2f}".rstrip("0").rstrip(".")
+
+
 def render_result(result, error=None):
+    global LAST_RESULT
+
     if error or not result:
+        LAST_RESULT = None
         clear_plot_output()
         legend_card = get("lineaire-vergelijking-legend")  # ty:ignore[unresolved-reference]  # noqa: F821
         if legend_card:
             legend_card.innerHTML = '<p class="text-base-content/60">Voer waarden in om de grafiek te zien.</p>'
         return
 
+    LAST_RESULT = result
+
     a = result["a"]
     b = result["b"]
     y = result["y"]
     x_solution = result["x"]
+    formatted_a = format_value(a)
+    formatted_b = format_value(b)
+    formatted_y = format_value(y)
+    formatted_x = format_value(x_solution)
 
     x_range = np.linspace(x_solution - 5, x_solution + 5, 100)
     y_values = a * x_range + b
 
-    plt.style.use("seaborn-v0_8-pastel")
     clear_plot_output()
 
     fig, ax = plt.subplots()
-    ax.plot(x_range, y_values, label=f"y = {a}x + {b}")
-    ax.axhline(y=y, color="r", linestyle="--", alpha=0.7, label=f"y = {y}")
-    ax.axvline(x=x_solution, color="g", linestyle="--", alpha=0.7, label=f"x = {x_solution:.2f}")
-    ax.scatter([x_solution], [y], color="green", zorder=5, s=100)
+    theme = apply_matplotlib_theme(fig, ax)  # ty:ignore[unresolved-reference]  # noqa: F821
+    chart_colors = theme["chart_colors"]
+
+    ax.plot(
+        x_range,
+        y_values,
+        color=chart_colors[0],
+        label=f"y = {formatted_a}x + {formatted_b}",
+    )
+    ax.axhline(
+        y=y,
+        color=theme["danger_color"],
+        linestyle="--",
+        alpha=0.7,
+        label=f"y = {formatted_y}",
+    )
+    ax.axvline(
+        x=x_solution,
+        color=chart_colors[2],
+        linestyle="--",
+        alpha=0.7,
+        label=f"x = {formatted_x}",
+    )
+    ax.scatter(
+        [x_solution],
+        [y],
+        color=chart_colors[2],
+        edgecolors=theme["surface_color"],
+        linewidths=1.5,
+        zorder=5,
+        s=100,
+    )
     ax.set_xlabel("x")
     ax.set_ylabel("y", rotation="horizontal", labelpad=15)
-    ax.grid(True, alpha=0.3)
+    ax.grid(True, color=theme["grid_color"], alpha=0.25)
 
     display(fig, target="lineaire-vergelijking-mpl")
     plt.close(fig)
@@ -96,9 +141,19 @@ def render_result(result, error=None):
     legend_card = get("lineaire-vergelijking-legend")  # ty:ignore[unresolved-reference]  # noqa: F821
     if legend_card:
         legend_card.innerHTML = f"""
-            <div class="flex flex-col gap-1">
-                <span>y = {y}</span>
-                <span>x = {x_solution:.2f}</span>
+            <div class="flex flex-col gap-3">
+                <div class="field">
+                    <div class="flex items-center gap-2">
+                        <i class="icon-[tabler--circle-letter-y] size-5 mr-1" aria-hidden="true"></i>
+                        <div class="input w-full cursor-default">{formatted_y}</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="flex items-center gap-2">
+                        <i class="icon-[tabler--circle-letter-x] size-5 mr-1" aria-hidden="true"></i>
+                        <div class="input w-full cursor-default">{formatted_x}</div>
+                    </div>
+                </div>
             </div>
         """
 
@@ -148,3 +203,18 @@ def reset_click(event):
             input_element.value = ""
 
     render_result(None)
+
+
+def on_theme_change(_event):
+    if LAST_RESULT:
+        render_result(LAST_RESULT)
+
+
+def start():
+    global THEME_CHANGE_PROXY
+
+    THEME_CHANGE_PROXY = create_proxy(on_theme_change)
+    window.addEventListener("app:themechange", THEME_CHANGE_PROXY)
+
+
+start()

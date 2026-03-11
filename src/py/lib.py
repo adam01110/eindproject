@@ -1,4 +1,4 @@
-from pyscript import storage, web
+from pyscript import document, storage, web, window
 
 APP_STORAGE_KEY = "eindproject"
 SETTINGS_STORAGE_KEY = "settings"
@@ -20,6 +20,97 @@ def first(selector):
 
 def get(element_id):
     return first(f"#{element_id}")
+
+
+MATPLOTLIB_THEME_TOKENS = {
+    "surface_color": "--card",
+    "text_color": "--foreground",
+    "border_color": "--border",
+    "grid_color": "--muted-foreground",
+    "danger_color": "--destructive",
+}
+
+MATPLOTLIB_CHART_TOKENS = [
+    "--chart-1",
+    "--chart-2",
+    "--chart-3",
+    "--chart-4",
+    "--chart-5",
+]
+
+
+def _css_color_to_rgba(color_value):
+    normalized_color = str(color_value).strip()
+    if not normalized_color:
+        return None
+
+    if not window.CSS.supports("color", normalized_color):
+        return None
+
+    canvas = document.createElement("canvas")
+    canvas.width = 1
+    canvas.height = 1
+    context = canvas.getContext("2d")
+    if not context:
+        return None
+
+    context.clearRect(0, 0, 1, 1)
+    context.fillStyle = "rgba(0, 0, 0, 0)"
+    context.fillStyle = normalized_color
+    context.fillRect(0, 0, 1, 1)
+
+    pixel = context.getImageData(0, 0, 1, 1).data
+    return tuple(channel / 255 for channel in pixel)
+
+
+def _get_css_variable(variable_name):
+    root = document.documentElement
+    if not root:
+        return ""
+
+    return window.getComputedStyle(root).getPropertyValue(variable_name).strip()
+
+
+def get_theme_color(variable_name):
+    return _css_color_to_rgba(_get_css_variable(variable_name))
+
+
+def get_matplotlib_theme():
+    theme = {
+        name: get_theme_color(variable_name)
+        for name, variable_name in MATPLOTLIB_THEME_TOKENS.items()
+    }
+    theme["chart_colors"] = [
+        get_theme_color(variable_name) for variable_name in MATPLOTLIB_CHART_TOKENS
+    ]
+    return theme
+
+
+def apply_matplotlib_theme(fig, ax):
+    theme = get_matplotlib_theme()
+    surface_color = theme["surface_color"]
+    text_color = theme["text_color"]
+
+    if surface_color is not None:
+        for setter in (
+            fig.patch.set_facecolor,
+            fig.patch.set_edgecolor,
+            ax.set_facecolor,
+        ):
+            setter(surface_color)
+
+    if text_color is not None:
+        ax.tick_params(colors=text_color)
+
+        for label in (ax.xaxis.label, ax.yaxis.label, ax.title):
+            label.set_color(text_color)
+
+    border_color = theme["border_color"]
+    if border_color is not None:
+        for spine in ax.spines.values():
+            spine.set_color(border_color)
+
+    return theme
 
 
 async def get_store():
