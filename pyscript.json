@@ -1,5 +1,15 @@
 {
 	"name": "eindproject",
 	"packages": ["numpy", "matplotlib"],
-	"files": {}
+	"files": {
+		"./py/lib.py": "",
+		"./py/loading.py": "",
+		"./py/sidebar.py": "",
+		"./py/navigation.py": "",
+		"./py/theme.py": "",
+		"./py/settings.py": "",
+		"./py/cijfer-calculator.py": "",
+		"./py/lineaire-vergelijking-oplosser.py": "",
+		"./py/percentage-calculator.py": ""
+	}
 }

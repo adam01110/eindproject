@@ -1,5 +1,6 @@
 import asyncio
 
+from lib import find, first, get, get_setting
 from pyscript import window
 from pyscript.ffi import create_proxy
 
@@ -32,9 +33,9 @@ def set_expanded(buttons, is_open):
 
 def sync_sidebar_controls(is_open):
     mobile_view = is_mobile_viewport()
-    open_buttons = find("[data-sidebar-open]")  # ty:ignore[unresolved-reference]  # noqa: F821
-    collapse_buttons = find("[data-sidebar-collapse]")  # ty:ignore[unresolved-reference]  # noqa: F821
-    pin_buttons = find("[data-sidebar-pin]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    open_buttons = find("[data-sidebar-open]")
+    collapse_buttons = find("[data-sidebar-collapse]")
+    pin_buttons = find("[data-sidebar-pin]")
 
     for button in open_buttons:
         hide = (not mobile_view) and is_open
@@ -70,7 +71,7 @@ def set_sidebar_edge_hover_enabled(is_enabled):
 
 
 async def read_sidebar_edge_hover_enabled():
-    setting_value = await get_setting(SIDEBAR_EDGE_HOVER_SETTING_KEY, True)  # ty:ignore[unresolved-reference]  # noqa: F821
+    setting_value = await get_setting(SIDEBAR_EDGE_HOVER_SETTING_KEY, True)
     return normalize_sidebar_edge_hover(setting_value)
 
 
@@ -97,7 +98,7 @@ def on_pointer_move(event):
     if pointer_x is None or pointer_y is None:
         return
 
-    sidebar = get("app-sidebar")  # ty:ignore[unresolved-reference]  # noqa: F821
+    sidebar = get("app-sidebar")
     if not sidebar:
         return
 
@@ -131,7 +132,7 @@ def on_document_click(event):
     if not is_mobile_viewport():
         return
 
-    sidebar = get("app-sidebar")  # ty:ignore[unresolved-reference]  # noqa: F821
+    sidebar = get("app-sidebar")
     if not sidebar or sidebar.ariaHidden == "true":
         return
 
@@ -143,7 +144,7 @@ def on_document_click(event):
     if target_closest and target.closest("[data-sidebar-open]"):
         return
 
-    sidebar_nav = first("#app-sidebar > nav")  # ty:ignore[unresolved-reference]  # noqa: F821
+    sidebar_nav = first("#app-sidebar > nav")
     if sidebar_nav and sidebar_nav.contains(target):
         return
 
@@ -166,7 +167,7 @@ def set_sidebar_state(is_open, temporary=False):
     if not temporary:
         EDGE_HOVER_OPEN = False
 
-    sidebar = get("app-sidebar")  # ty:ignore[unresolved-reference]  # noqa: F821
+    sidebar = get("app-sidebar")
     if not sidebar:
         return
 

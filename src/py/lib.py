@@ -30,6 +30,7 @@ MATPLOTLIB_CHART_TOKENS = [
 ]
 
 _store = None
+_memory_store = {}
 
 
 def find(selector):
@@ -399,6 +400,9 @@ async def get_store():
     if _store is None:
         _store = await storage(APP_STORAGE_KEY)
 
+    if _store is None:
+        return _memory_store
+
     return _store
 
 
@@ -415,7 +419,7 @@ async def set_value(key, value, sync=True):
     store = await get_store()
     store[key] = value
 
-    if sync:
+    if sync and hasattr(store, "sync"):
         await store.sync()
 
     return value

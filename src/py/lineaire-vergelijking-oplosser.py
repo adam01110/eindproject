@@ -4,6 +4,26 @@ import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
 import numpy as np  # ty:ignore[unresolved-import]
 from pyscript import when, window
 
+from lib import (
+    add_proxy_listener,
+    append_tool_history,
+    apply_matplotlib_theme,
+    clear_matplotlib_target,
+    delete_tool_history_and_refresh,
+    dispatch_history_click,
+    display_matplotlib_figure,
+    format_number,
+    get,
+    parse_number,
+    read_text_input_value,
+    render_history_list,
+    render_state_card,
+    render_summary_card,
+    set_element_value,
+    show_tab_panel,
+    sync_tool_history_view,
+)
+
 LINEAIRE_TOOL_INDEX = 1
 LINEAIRE_LAST_RESULT = None
 LINEAIRE_EVENT_PROXIES = []
@@ -31,18 +51,18 @@ LINEAIRE_HISTORY_VALUE_ICONS = {
 
 
 def lineaire_format_value(value):
-    return format_number(value)  # ty:ignore[unresolved-reference]  # noqa: F821
+    return format_number(value)
 
 
 def lineaire_clear_plot_output():
-    clear_matplotlib_target(LINEAIRE_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    clear_matplotlib_target(LINEAIRE_CHART_TARGET_ID)
 
 
 def lineaire_get_input_state():
     return {
-        "a": read_text_input_value("lineaire-vergelijking-a"),  # ty:ignore[unresolved-reference]  # noqa: F821
-        "b": read_text_input_value("lineaire-vergelijking-b"),  # ty:ignore[unresolved-reference]  # noqa: F821
-        "y": read_text_input_value("lineaire-vergelijking-y"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        "a": read_text_input_value("lineaire-vergelijking-a"),
+        "b": read_text_input_value("lineaire-vergelijking-b"),
+        "y": read_text_input_value("lineaire-vergelijking-y"),
     }
 
 
@@ -55,7 +75,7 @@ def lineaire_validate_input_state(state):
     parsed_values = {}
     for name in field_names:
         try:
-            parsed_values[name] = parse_number(state[name])  # ty:ignore[unresolved-reference]  # noqa: F821
+            parsed_values[name] = parse_number(state[name])
         except ValueError:
             return None, f"Voer een geldig getal in voor {name}."
 
@@ -86,7 +106,7 @@ def lineaire_render_result(result, error=None):
 
     if error:
         LINEAIRE_LAST_RESULT = None
-        render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_state_card(
             LINEAIRE_RESULT_CONTAINER_ID,
             error,
             variant="error",
@@ -96,7 +116,7 @@ def lineaire_render_result(result, error=None):
 
     if not result:
         LINEAIRE_LAST_RESULT = None
-        render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_state_card(
             LINEAIRE_RESULT_CONTAINER_ID,
             "Vul waarden in en klik op berekenen.",
             clear_plot=lineaire_clear_plot_output,
@@ -105,7 +125,7 @@ def lineaire_render_result(result, error=None):
 
     LINEAIRE_LAST_RESULT = result
 
-    result_container = get(LINEAIRE_RESULT_CONTAINER_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    result_container = get(LINEAIRE_RESULT_CONTAINER_ID)
     if not result_container:
         return
 
@@ -113,12 +133,12 @@ def lineaire_render_result(result, error=None):
     formatted_x = lineaire_format_value(result["x"])
 
     summary_cards = [
-        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_summary_card(
             "Oplossing voor x",
             formatted_x,
             "icon-[tabler--circle-letter-x]",
         ),
-        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_summary_card(
             "Waarde van y",
             formatted_y,
             "icon-[tabler--circle-letter-y]",
@@ -151,7 +171,7 @@ def lineaire_render_result(result, error=None):
     y_values = a * x_range + b
 
     fig, ax = plt.subplots(figsize=(8, 4.6))
-    theme = apply_matplotlib_theme(fig, ax)  # ty:ignore[unresolved-reference]  # noqa: F821
+    theme = apply_matplotlib_theme(fig, ax)
     chart_colors = theme["chart_colors"]
 
     ax.plot(
@@ -188,17 +208,17 @@ def lineaire_render_result(result, error=None):
     ax.grid(True, color=theme["grid_color"], alpha=0.25)
     ax.set_axisbelow(True)
 
-    display_matplotlib_figure(fig, LINEAIRE_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    display_matplotlib_figure(fig, LINEAIRE_CHART_TARGET_ID)
 
 
 def lineaire_set_input_values(a, b, y):
-    set_element_value("lineaire-vergelijking-a", a)  # ty:ignore[unresolved-reference]  # noqa: F821
-    set_element_value("lineaire-vergelijking-b", b)  # ty:ignore[unresolved-reference]  # noqa: F821
-    set_element_value("lineaire-vergelijking-y", y)  # ty:ignore[unresolved-reference]  # noqa: F821
+    set_element_value("lineaire-vergelijking-a", a)
+    set_element_value("lineaire-vergelijking-b", b)
+    set_element_value("lineaire-vergelijking-y", y)
 
 
 def lineaire_show_panel(panel_name):
-    show_tab_panel(panel_name, LINEAIRE_PANEL_CONFIGS)  # ty:ignore[unresolved-reference]  # noqa: F821
+    show_tab_panel(panel_name, LINEAIRE_PANEL_CONFIGS)
 
 
 def lineaire_normalize_history_entry(entry):
@@ -277,7 +297,7 @@ def lineaire_render_history_entry(entry, index):
 
 
 def lineaire_render_history_entries(history_entries):
-    render_history_list(  # ty:ignore[unresolved-reference]  # noqa: F821
+    render_history_list(
         "lineaire-vergelijking-history-list",
         "lineaire-vergelijking-history-empty",
         history_entries,
@@ -286,9 +306,9 @@ def lineaire_render_history_entries(history_entries):
 
 
 def lineaire_on_history_list_click(event):
-    dispatch_history_click(  # ty:ignore[unresolved-reference]  # noqa: F821
+    dispatch_history_click(
         event,
-        get("lineaire-vergelijking-history-list"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        get("lineaire-vergelijking-history-list"),
         lineaire_handle_history_action,
     )
 
@@ -299,7 +319,7 @@ def lineaire_on_theme_change(_event):
 
 
 async def lineaire_sync_history_view():
-    return await sync_tool_history_view(  # ty:ignore[unresolved-reference]  # noqa: F821
+    return await sync_tool_history_view(
         LINEAIRE_TOOL_INDEX,
         lineaire_normalize_history_entry,
         lineaire_render_history_entries,
@@ -324,7 +344,7 @@ async def lineaire_restore_history_entry(history_index):
 
 
 async def lineaire_delete_history_entry(history_index):
-    await delete_tool_history_and_refresh(  # ty:ignore[unresolved-reference]  # noqa: F821
+    await delete_tool_history_and_refresh(
         LINEAIRE_TOOL_INDEX,
         history_index,
         lineaire_sync_history_view,
@@ -354,7 +374,7 @@ async def lineaire_bereken_click(_event):
     )
     lineaire_render_result(result)
 
-    await append_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
+    await append_tool_history(
         LINEAIRE_TOOL_INDEX,
         {
             "a": validated_state["a"],
@@ -387,13 +407,13 @@ def lineaire_start():
     global LINEAIRE_EVENT_PROXIES
 
     LINEAIRE_EVENT_PROXIES = [
-        add_proxy_listener(window, "app:themechange", lineaire_on_theme_change),  # ty:ignore[unresolved-reference]  # noqa: F821
+        add_proxy_listener(window, "app:themechange", lineaire_on_theme_change),
     ]
 
-    history_list = get("lineaire-vergelijking-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
+    history_list = get("lineaire-vergelijking-history-list")
     if history_list:
         LINEAIRE_EVENT_PROXIES.append(
-            add_proxy_listener(history_list, "click", lineaire_on_history_list_click)  # ty:ignore[unresolved-reference]  # noqa: F821
+            add_proxy_listener(history_list, "click", lineaire_on_history_list_click)
         )
 
     LINEAIRE_EVENT_PROXIES = [proxy for proxy in LINEAIRE_EVENT_PROXIES if proxy]

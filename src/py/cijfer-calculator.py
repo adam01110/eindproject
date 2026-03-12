@@ -5,6 +5,29 @@ import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
 import numpy as np  # ty:ignore[unresolved-import]
 from pyscript import when, window
 
+from lib import (
+    add_proxy_listener,
+    append_tool_history,
+    apply_matplotlib_theme,
+    clear_matplotlib_target,
+    delete_tool_history_and_refresh,
+    dispatch_history_click,
+    display_matplotlib_figure,
+    format_number,
+    get,
+    get_dataset_int,
+    get_delegated_target,
+    normalize_decimal_input,
+    parse_number,
+    read_text_input_value,
+    render_history_list,
+    render_state_card,
+    render_summary_card,
+    set_element_value,
+    show_tab_panel,
+    sync_tool_history_view,
+)
+
 CIJFER_TOOL_INDEX = 2
 MINIMUM_ROW_COUNT = 2
 CIJFER_LAST_RESULT = None
@@ -23,19 +46,19 @@ CIJFER_PANEL_CONFIGS = (
 
 
 def cijfer_format_value(value):
-    return format_number(value, decimal_separator=",", empty_value="-")  # ty:ignore[unresolved-reference]  # noqa: F821
+    return format_number(value, decimal_separator=",", empty_value="-")
 
 
 def cijfer_normalize_decimal_value(value):
-    return normalize_decimal_input(value, decimal_separator=",")  # ty:ignore[unresolved-reference]  # noqa: F821
+    return normalize_decimal_input(value, decimal_separator=",")
 
 
 def cijfer_parse_decimal_value(value):
-    return parse_number(value)  # ty:ignore[unresolved-reference]  # noqa: F821
+    return parse_number(value)
 
 
 def cijfer_clear_plot_output():
-    clear_matplotlib_target(CIJFER_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    clear_matplotlib_target(CIJFER_CHART_TARGET_ID)
 
 
 def cijfer_grade_index(row_number):
@@ -100,7 +123,7 @@ def cijfer_normalize_grade_row_values(values):
 
 
 def cijfer_get_grade_rows_container():
-    return get("cijfer-calculator-grade-rows")  # ty:ignore[unresolved-reference]  # noqa: F821
+    return get("cijfer-calculator-grade-rows")
 
 
 def cijfer_get_grade_inputs():
@@ -212,12 +235,12 @@ def cijfer_sync_grade_rows(focus_index=None):
 
 def cijfer_get_goal_value():
     return cijfer_normalize_decimal_value(
-        read_text_input_value("cijfer-calculator-doel")  # ty:ignore[unresolved-reference]  # noqa: F821
+        read_text_input_value("cijfer-calculator-doel")
     )
 
 
 def cijfer_set_goal_value(value):
-    set_element_value("cijfer-calculator-doel", cijfer_normalize_decimal_value(value))  # ty:ignore[unresolved-reference]  # noqa: F821
+    set_element_value("cijfer-calculator-doel", cijfer_normalize_decimal_value(value))
 
 
 def cijfer_read_form_values():
@@ -279,13 +302,13 @@ def cijfer_render_goal_card(result):
         return ""
 
     if result["average"] >= goal:
-        return render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        return render_summary_card(
             "Doelstatus",
             "Behaald",
             "icon-[tabler--target-arrow]",
         )
 
-    return render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+    return render_summary_card(
         "Volgend cijfer",
         cijfer_format_value(required_next_grade),
         "icon-[tabler--chart-line]",
@@ -297,7 +320,7 @@ def cijfer_render_result(result=None, error=None):
 
     if error or not result:
         CIJFER_LAST_RESULT = None
-        render_state_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_state_card(
             CIJFER_RESULT_CONTAINER_ID,
             error or "Vul je cijfers in en klik op berekenen.",
             clear_plot=cijfer_clear_plot_output,
@@ -306,7 +329,7 @@ def cijfer_render_result(result=None, error=None):
 
     CIJFER_LAST_RESULT = result
 
-    result_container = get(CIJFER_RESULT_CONTAINER_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    result_container = get(CIJFER_RESULT_CONTAINER_ID)
     if not result_container:
         return
 
@@ -316,12 +339,12 @@ def cijfer_render_result(result=None, error=None):
     count = result["count"]
 
     summary_cards = [
-        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_summary_card(
             "Gemiddelde",
             cijfer_format_value(average),
             "icon-[tabler--calculator]",
         ),
-        render_summary_card(  # ty:ignore[unresolved-reference]  # noqa: F821
+        render_summary_card(
             "Totaal",
             cijfer_format_value(total),
             "icon-[tabler--plus]",
@@ -348,7 +371,7 @@ def cijfer_render_result(result=None, error=None):
 
     x_positions = np.arange(1, count + 1)
     fig, ax = plt.subplots(figsize=(8, 4.6))
-    theme = apply_matplotlib_theme(fig, ax)  # ty:ignore[unresolved-reference]  # noqa: F821
+    theme = apply_matplotlib_theme(fig, ax)
     chart_colors = theme["chart_colors"]
     bar_color = chart_colors[0] or theme["text_color"]
     average_color = chart_colors[2] or theme["danger_color"]
@@ -403,7 +426,7 @@ def cijfer_render_result(result=None, error=None):
     ax.grid(True, axis="y", color=theme["grid_color"], alpha=0.25)
     ax.set_axisbelow(True)
 
-    display_matplotlib_figure(fig, CIJFER_CHART_TARGET_ID, append=False)  # ty:ignore[unresolved-reference]  # noqa: F821
+    display_matplotlib_figure(fig, CIJFER_CHART_TARGET_ID, append=False)
 
 
 def cijfer_set_grade_values(values, focus_index=None, select=False):
@@ -420,7 +443,7 @@ def cijfer_set_form_values(grades, goal=None, focus_index=None):
 
 
 def cijfer_show_panel(panel_name):
-    show_tab_panel(panel_name, CIJFER_PANEL_CONFIGS)  # ty:ignore[unresolved-reference]  # noqa: F821
+    show_tab_panel(panel_name, CIJFER_PANEL_CONFIGS)
 
 
 def cijfer_normalize_history_entry(entry):
@@ -515,7 +538,7 @@ def cijfer_render_history_entry(entry, index):
 
 
 def cijfer_render_history_entries(history_entries):
-    render_history_list(  # ty:ignore[unresolved-reference]  # noqa: F821
+    render_history_list(
         "cijfer-calculator-history-list",
         "cijfer-calculator-history-empty",
         history_entries,
@@ -524,11 +547,11 @@ def cijfer_render_history_entries(history_entries):
 
 
 def cijfer_get_event_grade_input(event):
-    return get_delegated_target(event, "[data-grade-input]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    return get_delegated_target(event, "[data-grade-input]")
 
 
 def cijfer_get_row_index(element):
-    return get_dataset_int(element, "gradeIndex")  # ty:ignore[unresolved-reference]  # noqa: F821
+    return get_dataset_int(element, "gradeIndex")
 
 
 def cijfer_move_grade_focus(current_index, backwards=False):
@@ -585,7 +608,7 @@ def cijfer_on_grade_keydown(event):
 
 def cijfer_on_grade_click(event):
     rows_container = cijfer_get_grade_rows_container()
-    remove_button = get_delegated_target(event, "[data-grade-remove]", rows_container)  # ty:ignore[unresolved-reference]  # noqa: F821
+    remove_button = get_delegated_target(event, "[data-grade-remove]", rows_container)
     if not remove_button:
         return
 
@@ -600,9 +623,9 @@ def cijfer_on_grade_click(event):
 
 
 def cijfer_on_history_list_click(event):
-    dispatch_history_click(  # ty:ignore[unresolved-reference]  # noqa: F821
+    dispatch_history_click(
         event,
-        get("cijfer-calculator-history-list"),  # ty:ignore[unresolved-reference]  # noqa: F821
+        get("cijfer-calculator-history-list"),
         cijfer_handle_history_action,
     )
 
@@ -613,7 +636,7 @@ def cijfer_on_theme_change(_event):
 
 
 async def cijfer_sync_history_view():
-    return await sync_tool_history_view(  # ty:ignore[unresolved-reference]  # noqa: F821
+    return await sync_tool_history_view(
         CIJFER_TOOL_INDEX,
         cijfer_normalize_history_entry,
         cijfer_render_history_entries,
@@ -632,7 +655,7 @@ async def cijfer_restore_history_entry(history_index):
 
 
 async def cijfer_delete_history_entry(history_index):
-    await delete_tool_history_and_refresh(  # ty:ignore[unresolved-reference]  # noqa: F821
+    await delete_tool_history_and_refresh(
         CIJFER_TOOL_INDEX,
         history_index,
         cijfer_sync_history_view,
@@ -658,7 +681,7 @@ async def cijfer_bereken_click(_event):
     result = cijfer_calculate_result(values["grades"], values["goal"])
     cijfer_render_result(result)
 
-    await append_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
+    await append_tool_history(
         CIJFER_TOOL_INDEX,
         {
             "grades": values["grades"],
@@ -691,24 +714,24 @@ def cijfer_start():
     cijfer_render_grade_rows([])
 
     rows_container = cijfer_get_grade_rows_container()
-    history_list = get("cijfer-calculator-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
+    history_list = get("cijfer-calculator-history-list")
 
     CIJFER_EVENT_PROXIES = [
-        add_proxy_listener(window, "app:themechange", cijfer_on_theme_change),  # ty:ignore[unresolved-reference]  # noqa: F821
+        add_proxy_listener(window, "app:themechange", cijfer_on_theme_change),
     ]
 
     if rows_container:
         CIJFER_EVENT_PROXIES.extend(
             [
-                add_proxy_listener(rows_container, "input", cijfer_on_grade_input),  # ty:ignore[unresolved-reference]  # noqa: F821
-                add_proxy_listener(rows_container, "keydown", cijfer_on_grade_keydown),  # ty:ignore[unresolved-reference]  # noqa: F821
-                add_proxy_listener(rows_container, "click", cijfer_on_grade_click),  # ty:ignore[unresolved-reference]  # noqa: F821
+                add_proxy_listener(rows_container, "input", cijfer_on_grade_input),
+                add_proxy_listener(rows_container, "keydown", cijfer_on_grade_keydown),
+                add_proxy_listener(rows_container, "click", cijfer_on_grade_click),
             ]
         )
 
     if history_list:
         CIJFER_EVENT_PROXIES.append(
-            add_proxy_listener(history_list, "click", cijfer_on_history_list_click)  # ty:ignore[unresolved-reference]  # noqa: F821
+            add_proxy_listener(history_list, "click", cijfer_on_history_list_click)
         )
 
     CIJFER_EVENT_PROXIES = [proxy for proxy in CIJFER_EVENT_PROXIES if proxy]

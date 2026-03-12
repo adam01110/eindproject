@@ -1,3 +1,4 @@
+from lib import first, get
 from pyscript.ffi import create_proxy
 
 LOADING_BADGE_ID = "pyscript-loading"
@@ -9,7 +10,7 @@ BADGE_REMOVED = False
 def hide_loading_badge(_event=None):
     global BADGE_REMOVED
 
-    badge = get(LOADING_BADGE_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
+    badge = get(LOADING_BADGE_ID)
     if BADGE_REMOVED or not badge:
         return
 
@@ -18,7 +19,7 @@ def hide_loading_badge(_event=None):
 
 
 def start():
-    root = first("html")  # ty:ignore[unresolved-reference]  # noqa: F821
+    root = first("html")
     if not root:
         return
 

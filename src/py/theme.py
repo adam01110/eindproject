@@ -1,5 +1,6 @@
 import asyncio
 
+from lib import first, get, get_setting, set_setting
 from pyscript import document, when, window
 
 DEFAULT_THEME = "dark"
@@ -10,7 +11,7 @@ def normalize_theme(theme_value):
 
 
 def apply_theme(theme_value):
-    root = first("html")  # ty:ignore[unresolved-reference]  # noqa: F821
+    root = first("html")
     if not root:
         return
 
@@ -28,12 +29,12 @@ def dispatch_theme_change(theme_value):
 
 
 async def read_saved_theme():
-    saved_theme = await get_setting("theme", DEFAULT_THEME)  # ty:ignore[unresolved-reference]  # noqa: F821
+    saved_theme = await get_setting("theme", DEFAULT_THEME)
     return normalize_theme(saved_theme)
 
 
 def update_theme_toggle(theme_value):
-    toggle_node = first("[data-theme-toggle]")  # ty:ignore[unresolved-reference]  # noqa: F821
+    toggle_node = first("[data-theme-toggle]")
     if not toggle_node:
         return
 
@@ -48,7 +49,7 @@ def update_theme_toggle(theme_value):
 
 
 def update_theme_select(theme_value):
-    theme_select = get("settings-theme-select")  # ty:ignore[unresolved-reference]  # noqa: F821
+    theme_select = get("settings-theme-select")
     if not theme_select:
         return
 
@@ -63,12 +64,12 @@ async def set_theme(theme_value, persist=True):
     dispatch_theme_change(normalized_theme)
 
     if persist:
-        await set_setting("theme", normalized_theme)  # ty:ignore[unresolved-reference]  # noqa: F821
+        await set_setting("theme", normalized_theme)
 
 
 @when("click", "[data-theme-toggle]")
 async def on_theme_toggle_click(_event):
-    root = first("html")  # ty:ignore[unresolved-reference]  # noqa: F821
+    root = first("html")
     is_dark = bool(root and root.classList.contains("dark"))
     next_theme = "light" if is_dark else "dark"
     await set_theme(next_theme)
