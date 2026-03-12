@@ -1,33 +1,28 @@
 _: {
   perSystem = {
     pkgs,
-    config,
     ...
   }: {
     devShells = let
       inherit (builtins) attrValues;
       inherit (pkgs) mkShell;
       inherit (pkgs.lib) getExe;
-
-      inherit (config.packages) python-minifier;
     in {
       default = mkShell {
-        packages =
-          (attrValues {
-            inherit
-              (pkgs)
-              alejandra
-              biome
-              bun
-              codex
-              nixd
-              ruff
-              tailwindcss-language-server
-              tokei
-              vscode-langservers-extracted
-              ;
-          })
-          ++ [python-minifier];
+        packages = attrValues {
+          inherit
+            (pkgs)
+            alejandra
+            biome
+            bun
+            codex
+            nixd
+            ruff
+            tailwindcss-language-server
+            tokei
+            vscode-langservers-extracted
+            ;
+        };
 
         shellHook = ''
           has_zed() {
@@ -44,10 +39,7 @@ _: {
       };
 
       build = mkShell {
-        packages = [
-          pkgs.bun
-          config.packages.python-minifier
-        ];
+        packages = [pkgs.bun];
       };
     };
   };

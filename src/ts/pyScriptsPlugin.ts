@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { normalizePath, type Plugin } from "vite";
@@ -23,58 +22,6 @@ const collectPythonFiles = async (directoryPath: string): Promise<string[]> => {
 	return files;
 };
 
-const minifyPythonFile = async (
-	pythonFilePath: string,
-): Promise<string | null> =>
-	new Promise((resolveMinified, rejectMinified) => {
-		const child = spawn("pyminify", [pythonFilePath]);
-		let stdout = "";
-		let stderr = "";
-		let settled = false;
-
-		child.stdout.on("data", (chunk: Buffer) => {
-			stdout += chunk.toString();
-		});
-
-		child.stderr.on("data", (chunk: Buffer) => {
-			stderr += chunk.toString();
-		});
-
-		child.once("error", (error: NodeJS.ErrnoException) => {
-			if (settled) {
-				return;
-			}
-
-			if (error.code === "ENOENT") {
-				settled = true;
-				resolveMinified(null);
-				return;
-			}
-
-			settled = true;
-			rejectMinified(error);
-		});
-
-		child.once("close", (code) => {
-			if (settled) {
-				return;
-			}
-
-			settled = true;
-
-			if (code === 0) {
-				resolveMinified(stdout);
-				return;
-			}
-
-			rejectMinified(
-				new Error(
-					`pyminify failed for ${pythonFilePath}: ${stderr.trim() || `exit code ${code}`}`,
-				),
-			);
-		});
-	});
-
 export const createPyScriptsPlugin = (pythonRootPath: string): Plugin => ({
 	name: "pyscript-sources-plugin",
 
@@ -97,22 +44,9 @@ export const createPyScriptsPlugin = (pythonRootPath: string): Plugin => ({
 
 	async generateBundle() {
 		const pythonFiles = await collectPythonFiles(pythonRootPath);
-		let hasWarnedMissingPyminify = false;
 
 		for (const pythonFilePath of pythonFiles) {
-			const minifiedSource = await minifyPythonFile(pythonFilePath);
-			let source = minifiedSource;
-
-			if (source === null) {
-				source = await readFile(pythonFilePath, "utf8");
-
-				if (!hasWarnedMissingPyminify) {
-					hasWarnedMissingPyminify = true;
-					this.warn(
-						"pyminify is not available; emitting original Python sources without minification.",
-					);
-				}
-			}
+			const source = await readFile(pythonFilePath, "utf8");
 
 			const fileName = relative(pythonRootPath, pythonFilePath)
 				.split("\\")
