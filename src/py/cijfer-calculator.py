@@ -38,13 +38,26 @@ def cijfer_clear_plot_output():
     clear_matplotlib_target(CIJFER_CHART_TARGET_ID)  # ty:ignore[unresolved-reference]  # noqa: F821
 
 
+def cijfer_grade_index(row_number):
+    if 0 <= row_number <= 9:
+        return (
+            f'<i class="icon-[tabler--rosette-number-{row_number}] size-5" '
+            'aria-hidden="true"></i>'
+        )
+
+    return f"<span>{row_number}</span>"
+
+
 def cijfer_build_grade_row_markup(index, value=""):
     safe_value = escape(cijfer_normalize_decimal_value(value), quote=True)
     row_number = index + 1
+    row_index_markup = cijfer_grade_index(row_number)
 
     return f"""
         <tr data-grade-row data-grade-index="{index}">
-            <th class="font-semibold text-base-content/60">{row_number}</th>
+            <th class="font-semibold text-base-content/60">
+                <span class="flex items-center justify-center">{row_index_markup}</span>
+            </th>
             <td>
                 <input
                     type="text"

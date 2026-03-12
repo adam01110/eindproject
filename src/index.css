@@ -10,4 +10,6 @@
 @plugin "tailwindcss-motion";
 @plugin "@iconify/tailwind4";
 
+@source inline("icon-[tabler--rosette-number-{1..9}]");
+
 @source not "../AGENTS.md";
