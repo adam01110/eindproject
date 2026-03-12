@@ -277,7 +277,7 @@ def lineaire_render_history_entry(entry, index):
 
 
 def lineaire_render_history_entries(history_entries):
-    render_history_list(   # ty:ignore[unresolved-reference]  # noqa: F821
+    render_history_list(  # ty:ignore[unresolved-reference]  # noqa: F821
         "lineaire-vergelijking-history-list",
         "lineaire-vergelijking-history-empty",
         history_entries,
@@ -286,9 +286,9 @@ def lineaire_render_history_entries(history_entries):
 
 
 def lineaire_on_history_list_click(event):
-    dispatch_history_click(   # ty:ignore[unresolved-reference]  # noqa: F821
+    dispatch_history_click(  # ty:ignore[unresolved-reference]  # noqa: F821
         event,
-        get("lineaire-vergelijking-history-list"),   # ty:ignore[unresolved-reference]  # noqa: F821
+        get("lineaire-vergelijking-history-list"),  # ty:ignore[unresolved-reference]  # noqa: F821
         lineaire_handle_history_action,
     )
 
@@ -299,7 +299,7 @@ def lineaire_on_theme_change(_event):
 
 
 async def lineaire_sync_history_view():
-    return await sync_tool_history_view(   # ty:ignore[unresolved-reference]  # noqa: F821
+    return await sync_tool_history_view(  # ty:ignore[unresolved-reference]  # noqa: F821
         LINEAIRE_TOOL_INDEX,
         lineaire_normalize_history_entry,
         lineaire_render_history_entries,
@@ -324,7 +324,7 @@ async def lineaire_restore_history_entry(history_index):
 
 
 async def lineaire_delete_history_entry(history_index):
-    await delete_tool_history_and_refresh(   # ty:ignore[unresolved-reference]  # noqa: F821
+    await delete_tool_history_and_refresh(  # ty:ignore[unresolved-reference]  # noqa: F821
         LINEAIRE_TOOL_INDEX,
         history_index,
         lineaire_sync_history_view,
@@ -354,7 +354,7 @@ async def lineaire_bereken_click(_event):
     )
     lineaire_render_result(result)
 
-    await append_tool_history(   # ty:ignore[unresolved-reference]  # noqa: F821
+    await append_tool_history(  # ty:ignore[unresolved-reference]  # noqa: F821
         LINEAIRE_TOOL_INDEX,
         {
             "a": validated_state["a"],
@@ -387,13 +387,13 @@ def lineaire_start():
     global LINEAIRE_EVENT_PROXIES
 
     LINEAIRE_EVENT_PROXIES = [
-        add_proxy_listener(window, "app:themechange", lineaire_on_theme_change),   # ty:ignore[unresolved-reference]  # noqa: F821
+        add_proxy_listener(window, "app:themechange", lineaire_on_theme_change),  # ty:ignore[unresolved-reference]  # noqa: F821
     ]
 
-    history_list = get("lineaire-vergelijking-history-list")   # ty:ignore[unresolved-reference]  # noqa: F821
+    history_list = get("lineaire-vergelijking-history-list")  # ty:ignore[unresolved-reference]  # noqa: F821
     if history_list:
         LINEAIRE_EVENT_PROXIES.append(
-            add_proxy_listener(history_list, "click", lineaire_on_history_list_click)   # ty:ignore[unresolved-reference]  # noqa: F821
+            add_proxy_listener(history_list, "click", lineaire_on_history_list_click)  # ty:ignore[unresolved-reference]  # noqa: F821
         )
 
     LINEAIRE_EVENT_PROXIES = [proxy for proxy in LINEAIRE_EVENT_PROXIES if proxy]

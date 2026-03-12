@@ -411,7 +411,7 @@ def percentage_render_matplotlib_chart(result):
         return
 
     fig, ax = plt.subplots(figsize=(6, 4.2))
-    theme = apply_matplotlib_theme(fig, ax)   # ty:ignore[unresolved-reference]  # noqa: F821
+    theme = apply_matplotlib_theme(fig, ax)  # ty:ignore[unresolved-reference]  # noqa: F821
     chart_data = percentage_get_chart_data(result, theme)
 
     if not chart_data or sum(chart_data["values"]) <= 0:
