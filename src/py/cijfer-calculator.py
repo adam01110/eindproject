@@ -449,7 +449,9 @@ def cijfer_set_form_values(grades, goal=None, focus_index=None):
 
 def cijfer_show_panel(panel_name):
     show_tab_panel(panel_name, CIJFER_PANEL_CONFIGS)
-    sync_history_clear_button("cijfer-calculator-clear-history", panel_name == "history")
+    sync_history_clear_button(
+        "cijfer-calculator-clear-history", panel_name == "history"
+    )
 
 
 def cijfer_normalize_history_entry(entry):

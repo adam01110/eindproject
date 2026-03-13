@@ -1,8 +1,5 @@
 _: {
-  perSystem = {
-    pkgs,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     devShells = let
       inherit (builtins) attrValues;
       inherit (pkgs) mkShell;

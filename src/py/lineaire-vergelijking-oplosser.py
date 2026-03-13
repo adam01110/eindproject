@@ -228,7 +228,9 @@ def lineaire_set_input_values(a, b, y):
 
 def lineaire_show_panel(panel_name):
     show_tab_panel(panel_name, LINEAIRE_PANEL_CONFIGS)
-    sync_history_clear_button("lineaire-vergelijking-clear-history", panel_name == "history")
+    sync_history_clear_button(
+        "lineaire-vergelijking-clear-history", panel_name == "history"
+    )
 
 
 def lineaire_normalize_history_entry(entry):

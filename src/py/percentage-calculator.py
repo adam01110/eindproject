@@ -598,7 +598,9 @@ def percentage_reset_inputs():
 
 def percentage_show_panel(panel_name):
     show_tab_panel(panel_name, PERCENTAGE_PANEL_CONFIGS)
-    sync_history_clear_button("percentage-calculator-clear-history", panel_name == "history")
+    sync_history_clear_button(
+        "percentage-calculator-clear-history", panel_name == "history"
+    )
 
 
 def percentage_normalize_history_entry(entry):
