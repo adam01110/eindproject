@@ -3,49 +3,51 @@
     config="./pyscript.json"
 ></py-script>
 
-<div class="fixed left-1/2 top-2 z-20 -translate-x-1/2">
-    <div class="tabs">
-        <div
-            role="tablist"
-            aria-label="Percentage calculator tabs"
-            class="p-0.5 gap-1"
-        >
-            <button
-                type="button"
-                id="percentage-calculator-tool-tab"
-                role="tab"
-                aria-selected="true"
-                aria-controls="percentage-calculator-tool-panel"
-                tabindex="0"
-                class="h-full w-30 leading-none"
+<div class="fixed inset-x-0 top-2 z-20 flex justify-center">
+    <div class="relative">
+        <div class="tabs">
+            <div
+                role="tablist"
+                aria-label="Percentage calculator tabs"
+                class="p-0.5 gap-1"
             >
-                <i class="icon-[tabler--tool] size-4" aria-hidden="true"></i>
-                Tool
-            </button>
-            <button
-                type="button"
-                id="percentage-calculator-history-tab"
-                role="tab"
-                aria-selected="false"
-                aria-controls="percentage-calculator-history-panel"
-                tabindex="-1"
-                class="h-full w-30 leading-none"
-            >
-                <i class="icon-[tabler--history] size-4" aria-hidden="true"></i>
-                History
-            </button>
+                <button
+                    type="button"
+                    id="percentage-calculator-tool-tab"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="percentage-calculator-tool-panel"
+                    tabindex="0"
+                    class="h-full w-30 leading-none"
+                >
+                    <i class="icon-[tabler--tool] size-4" aria-hidden="true"></i>
+                    Tool
+                </button>
+                <button
+                    type="button"
+                    id="percentage-calculator-history-tab"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="percentage-calculator-history-panel"
+                    tabindex="-1"
+                    class="h-full w-30 leading-none"
+                >
+                    <i class="icon-[tabler--history] size-4" aria-hidden="true"></i>
+                    History
+                </button>
+            </div>
         </div>
+        <button
+            type="button"
+            id="percentage-calculator-clear-history"
+            class="btn-destructive fixed bottom-4 left-1/2 z-20 h-9 -translate-x-1/2 whitespace-nowrap px-3 origin-top invisible scale-95 opacity-0 pointer-events-none transition-[opacity,transform] duration-200 ease-out lg:absolute lg:top-1/2 lg:bottom-auto lg:left-full lg:z-auto lg:ml-[0.563rem] lg:translate-x-0 lg:-translate-y-1/2 lg:origin-left motion-safe:motion-preset-pop motion-safe:motion-opacity-in-0 motion-safe:motion-scale-in-95 motion-safe:motion-duration-250 motion-reduce:transition-none motion-reduce:motion-duration-0"
+            disabled
+            aria-hidden="true"
+        >
+            <i class="icon-[tabler--trash] size-4" aria-hidden="true"></i>
+            Clear
+        </button>
     </div>
-    <button
-        type="button"
-        id="percentage-calculator-clear-history"
-        class="btn-destructive fixed right-4 bottom-4 left-4 z-20 h-9 whitespace-nowrap px-3 origin-top invisible scale-95 opacity-0 pointer-events-none transition-[opacity,transform] duration-200 ease-out lg:absolute lg:top-1/2 lg:right-auto lg:bottom-auto lg:left-full lg:z-auto lg:ml-[0.563rem] lg:w-auto lg:-translate-y-1/2 lg:origin-left motion-safe:motion-preset-pop motion-safe:motion-opacity-in-0 motion-safe:motion-scale-in-95 motion-safe:motion-duration-250 motion-reduce:transition-none motion-reduce:motion-duration-0"
-        disabled
-        aria-hidden="true"
-    >
-        <i class="icon-[tabler--trash] size-4" aria-hidden="true"></i>
-        Clear
-    </button>
 </div>
 
 <section id="percentage-calculator-tool-panel" role="tabpanel">

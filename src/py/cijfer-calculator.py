@@ -44,6 +44,14 @@ CIJFER_PANEL_CONFIGS = (
         "cijfer-calculator-history-panel",
     ),
 )
+CIJFER_HISTORY_VALUE_ICONS = {
+    "grade": "icon-[tabler--hash]",
+    "average": "icon-[tabler--chart-bar]",
+    "total": "icon-[tabler--plus]",
+    "count": "icon-[tabler--list-numbers]",
+    "goal": "icon-[tabler--target-arrow]",
+    "required_next_grade": "icon-[tabler--arrow-big-right-lines]",
+}
 
 
 def cijfer_format_value(value):
@@ -480,31 +488,47 @@ def cijfer_normalize_history_entry(entry):
     return {"grades": normalized_grades, "goal": normalized_goal}
 
 
-def cijfer_render_grade_badges(grades):
-    return "".join(
-        f'<span class="badge-outline">{cijfer_format_value(grade)}</span>'
-        for grade in grades
-    )
+def cijfer_render_history_value(label, value):
+    icon_class = CIJFER_HISTORY_VALUE_ICONS.get(label, "icon-[tabler--circle]")
+
+    return f"""
+        <div class="flex items-center gap-2 text-sm font-semibold">
+            <i class="{icon_class} size-4 text-base-content/60" aria-hidden="true"></i>
+            <p>{value}</p>
+        </div>
+    """
 
 
 def cijfer_render_history_entry(entry, index):
     result = cijfer_calculate_result(entry["grades"], entry.get("goal"))
+    input_values = [
+        cijfer_render_history_value("grade", cijfer_format_value(grade))
+        for grade in entry["grades"]
+    ]
 
-    output_badges = [
-        f'<span class="badge-secondary">Gemiddelde {cijfer_format_value(result["average"])} </span>',
-        f'<span class="badge-secondary">Totaal {cijfer_format_value(result["total"])} </span>',
-        f'<span class="badge-secondary">Aantal {result["count"]}</span>',
+    if entry.get("goal") is not None:
+        input_values.append(
+            cijfer_render_history_value("goal", cijfer_format_value(entry["goal"]))
+        )
+
+    output_values = [
+        cijfer_render_history_value("average", cijfer_format_value(result["average"])),
+        cijfer_render_history_value("total", cijfer_format_value(result["total"])),
+        cijfer_render_history_value("count", str(result["count"])),
     ]
 
     if result["goal"] is not None:
-        output_badges.append(
-            f'<span class="badge-secondary">Doel {cijfer_format_value(result["goal"])} </span>'
+        output_values.append(
+            cijfer_render_history_value("goal", cijfer_format_value(result["goal"]))
         )
 
     if result["required_next_grade"] is not None and result["goal"] is not None:
         if result["average"] < result["goal"]:
-            output_badges.append(
-                f'<span class="badge-secondary">Volgende {cijfer_format_value(result["required_next_grade"])} </span>'
+            output_values.append(
+                cijfer_render_history_value(
+                    "required_next_grade",
+                    cijfer_format_value(result["required_next_grade"]),
+                )
             )
 
     return f"""
@@ -512,15 +536,15 @@ def cijfer_render_history_entry(entry, index):
             <section class="flex flex-wrap items-center gap-3 p-4 xl:flex-nowrap">
                 <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
                     <div class="flex items-center gap-2">
-                        <span class="badge-outline">Cijfers</span>
+                        <span class="badge-outline">Input</span>
                     </div>
-                    <div class="flex flex-wrap gap-2">{cijfer_render_grade_badges(entry["grades"])}</div>
+                    {"".join(input_values)}
                 </div>
                 <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
                     <div class="flex items-center gap-2">
-                        <span class="badge-secondary">Resultaat</span>
+                        <span class="badge-secondary">Output</span>
                     </div>
-                    <div class="flex flex-wrap gap-2">{"".join(output_badges)}</div>
+                    {"".join(output_values)}
                 </div>
                 <div class="flex shrink-0 items-center gap-2 self-center">
                     <button

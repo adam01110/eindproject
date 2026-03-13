@@ -40,15 +40,18 @@ PERCENTAGE_MODE_CONFIGS = {
             "placeholder": "Bijvoorbeeld: 25",
             "help": "Vul het deel in dat je wilt vergelijken.",
             "history_label": "Deel",
+            "history_icon": "icon-[tabler--circle-letter-a]",
         },
         "value_2": {
             "label": "Totaal",
             "placeholder": "Bijvoorbeeld: 80",
             "help": "Vul het totaal in waar het deel van afkomt.",
             "history_label": "Totaal",
+            "history_icon": "icon-[tabler--circle-letter-b]",
         },
         "show_iterations": False,
         "result_label": "Percentage",
+        "result_icon": "icon-[tabler--percentage]",
     },
     "korting": {
         "badge": "Korting",
@@ -59,15 +62,18 @@ PERCENTAGE_MODE_CONFIGS = {
             "placeholder": "Bijvoorbeeld: 80",
             "help": "Vul de oorspronkelijke waarde in.",
             "history_label": "Oud",
+            "history_icon": "icon-[tabler--circle-letter-a]",
         },
         "value_2": {
             "label": "Korting (%)",
             "placeholder": "Bijvoorbeeld: 25",
             "help": "Vul het kortingspercentage in.",
             "history_label": "%",
+            "history_icon": "icon-[tabler--percentage]",
         },
         "show_iterations": False,
         "result_label": "Nieuwe waarde",
+        "result_icon": "icon-[tabler--discount-2]",
     },
     "stijging": {
         "badge": "Stijging",
@@ -78,15 +84,18 @@ PERCENTAGE_MODE_CONFIGS = {
             "placeholder": "Bijvoorbeeld: 100",
             "help": "Vul de waarde in waar je mee start.",
             "history_label": "Start",
+            "history_icon": "icon-[tabler--circle-letter-a]",
         },
         "value_2": {
             "label": "Stijging (%)",
             "placeholder": "Bijvoorbeeld: 5",
             "help": "Vul het stijgingspercentage in.",
             "history_label": "%",
+            "history_icon": "icon-[tabler--percentage]",
         },
         "show_iterations": True,
         "result_label": "Nieuwe waarde",
+        "result_icon": "icon-[tabler--trending-up]",
     },
     "verschil": {
         "badge": "Procentverschil",
@@ -97,15 +106,18 @@ PERCENTAGE_MODE_CONFIGS = {
             "placeholder": "Bijvoorbeeld: 40",
             "help": "Vul de beginwaarde in.",
             "history_label": "Van",
+            "history_icon": "icon-[tabler--circle-letter-a]",
         },
         "value_2": {
             "label": "Tweede getal",
             "placeholder": "Bijvoorbeeld: 50",
             "help": "Vul de nieuwe waarde in.",
             "history_label": "Naar",
+            "history_icon": "icon-[tabler--circle-letter-b]",
         },
         "show_iterations": False,
         "result_label": "Verschil in %",
+        "result_icon": "icon-[tabler--arrows-diff]",
     },
 }
 
@@ -651,10 +663,10 @@ def percentage_format_history_result(entry):
     return percentage_format_value(entry["result"])
 
 
-def percentage_render_history_value(label, value):
+def percentage_render_history_value(value, icon_class):
     return f"""
         <div class="flex items-center gap-2 text-sm font-semibold">
-            <p class="text-base-content/60">{label}</p>
+            <i class="{icon_class} size-4 text-base-content/60" aria-hidden="true"></i>
             <p>{value}</p>
         </div>
     """
@@ -663,17 +675,17 @@ def percentage_render_history_value(label, value):
 def percentage_get_history_input_values(entry, mode_config):
     input_values = [
         (
-            mode_config["value_1"]["history_label"],
+            mode_config["value_1"]["history_icon"],
             percentage_format_value(entry["value_1"]),
         ),
         (
-            mode_config["value_2"]["history_label"],
+            mode_config["value_2"]["history_icon"],
             percentage_format_value(entry["value_2"]),
         ),
     ]
 
     if mode_config["show_iterations"]:
-        input_values.append(("Keer", str(entry["iterations"])))
+        input_values.append(("icon-[tabler--reload]", str(entry["iterations"])))
 
     return input_values
 
@@ -681,12 +693,12 @@ def percentage_get_history_input_values(entry, mode_config):
 def percentage_render_history_entry(entry, index):
     mode_config = percentage_get_mode_config(entry["mode"])
     input_values_html = "".join(
-        percentage_render_history_value(label, value)
-        for label, value in percentage_get_history_input_values(entry, mode_config)
+        percentage_render_history_value(value, icon_class)
+        for icon_class, value in percentage_get_history_input_values(entry, mode_config)
     )
     output_value_html = percentage_render_history_value(
-        mode_config["result_label"],
         percentage_format_history_result(entry),
+        mode_config["result_icon"],
     )
 
     return f'''
@@ -694,13 +706,14 @@ def percentage_render_history_entry(entry, index):
             <section class="flex flex-wrap items-center gap-3 p-4 xl:flex-nowrap">
                 <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
                     <div class="flex items-center gap-2">
+                        <span class="badge-outline">Input</span>
                         <span class="badge-outline">{mode_config["badge"]}</span>
                     </div>
                     {input_values_html}
                 </div>
                 <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
                     <div class="flex items-center gap-2">
-                        <span class="badge-secondary">Resultaat</span>
+                        <span class="badge-secondary">Output</span>
                     </div>
                     {output_value_html}
                 </div>
