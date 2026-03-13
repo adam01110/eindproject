@@ -33,7 +33,7 @@ PERCENTAGE_EVENT_PROXIES = []
 PERCENTAGE_MODE_CONFIGS = {
     "deel-van-totaal": {
         "badge": "Deel van totaal",
-        "description": "",
+        "description": "Kies deze berekening om te zien hoeveel procent een deel van een totaal is. Vul daarna het deel en het totaal uit je situatie in.",
         "formula": "percentage = (deel / totaal) x 100",
         "value_1": {
             "label": "Deel",
@@ -52,7 +52,7 @@ PERCENTAGE_MODE_CONFIGS = {
     },
     "korting": {
         "badge": "Korting",
-        "description": "",
+        "description": "Gebruik deze berekening om een nieuwe waarde na korting uit te rekenen. Vul de oude waarde en het kortingspercentage in.",
         "formula": "nieuw = oud - (percentage / 100 x oud)",
         "value_1": {
             "label": "Oude waarde",
@@ -71,7 +71,7 @@ PERCENTAGE_MODE_CONFIGS = {
     },
     "stijging": {
         "badge": "Stijging",
-        "description": "",
+        "description": "Gebruik deze berekening voor procentuele groei. Vul de beginwaarde en het stijgingspercentage in; bij meerdere keren toepassen kun je samengestelde groei berekenen.",
         "formula": "nieuw = oud + (percentage / 100 x oud)",
         "value_1": {
             "label": "Beginwaarde",
@@ -90,7 +90,7 @@ PERCENTAGE_MODE_CONFIGS = {
     },
     "verschil": {
         "badge": "Procentverschil",
-        "description": "",
+        "description": "Kies deze berekening om het procentuele verschil tussen twee getallen te zien. Vul eerst de beginwaarde en daarna de nieuwe waarde in.",
         "formula": "verschil % = ((nieuw - oud) / oud) x 100",
         "value_1": {
             "label": "Eerste getal",
