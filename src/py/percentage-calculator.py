@@ -665,9 +665,9 @@ def percentage_format_history_result(entry):
 
 def percentage_render_history_value(value, icon_class):
     return f"""
-        <div class="flex items-center gap-2 text-sm font-semibold">
+        <div class="flex min-w-0 items-center gap-2 text-sm font-semibold leading-snug">
             <i class="{icon_class} size-4 text-base-content/60" aria-hidden="true"></i>
-            <p>{value}</p>
+            <p class="min-w-0 break-words">{value}</p>
         </div>
     """
 
@@ -703,24 +703,24 @@ def percentage_render_history_entry(entry, index):
 
     return f'''
         <article class="card p-0">
-            <section class="flex flex-wrap items-center gap-3 p-4 xl:flex-nowrap">
-                <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
-                    <div class="flex items-center gap-2">
+            <section class="flex flex-col gap-3 p-4 md:flex-row md:flex-wrap xl:flex-nowrap">
+                <div class="min-w-0 rounded-xl border border-border/70 bg-card/85 p-3 sm:flex sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-3 md:flex-1">
+                    <div class="mb-3 flex flex-wrap items-center gap-2 sm:mb-0">
                         <span class="badge-outline">Input</span>
                         <span class="badge-outline">{mode_config["badge"]}</span>
                     </div>
                     {input_values_html}
                 </div>
-                <div class="min-w-0 flex flex-1 flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border border-border/70 bg-card/85 p-3">
-                    <div class="flex items-center gap-2">
+                <div class="min-w-0 rounded-xl border border-border/70 bg-card/85 p-3 sm:flex sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-3 md:flex-1">
+                    <div class="mb-3 flex items-center gap-2 sm:mb-0">
                         <span class="badge-secondary">Output</span>
                     </div>
                     {output_value_html}
                 </div>
-                <div class="flex shrink-0 items-center gap-2 self-center">
+                <div class="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:shrink-0 md:self-center">
                     <button
                         type="button"
-                        class="btn-outline whitespace-nowrap"
+                        class="btn-outline w-full justify-center whitespace-nowrap sm:w-auto"
                         data-history-action="restore"
                         data-history-index="{index}"
                     >
@@ -728,7 +728,7 @@ def percentage_render_history_entry(entry, index):
                     </button>
                     <button
                         type="button"
-                        class="btn-destructive whitespace-nowrap"
+                        class="btn-destructive w-full justify-center whitespace-nowrap sm:w-auto"
                         data-history-action="delete"
                         data-history-index="{index}"
                     >
