@@ -1,7 +1,6 @@
 import asyncio
 
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
-import numpy as np  # ty:ignore[unresolved-import]
 from pyscript import when, window
 
 from lib import (
@@ -9,6 +8,7 @@ from lib import (
     append_tool_history,
     apply_matplotlib_theme,
     clear_matplotlib_target,
+    clear_tool_history_and_refresh,
     delete_tool_history_and_refresh,
     dispatch_history_click,
     display_matplotlib_figure,
@@ -21,6 +21,7 @@ from lib import (
     render_summary_card,
     set_element_value,
     show_tab_panel,
+    sync_history_clear_button,
     sync_tool_history_view,
 )
 
@@ -48,6 +49,14 @@ LINEAIRE_HISTORY_VALUE_ICONS = {
     "y": "icon-[tabler--circle-letter-y]",
     "x": "icon-[tabler--circle-letter-x]",
 }
+
+
+def lineaire_build_plot_range(start, end, point_count=100):
+    if point_count <= 1:
+        return [start]
+
+    step = (end - start) / (point_count - 1)
+    return [start + step * index for index in range(point_count)]
 
 
 def lineaire_format_value(value):
@@ -167,8 +176,8 @@ def lineaire_render_result(result, error=None):
     y_value = result["y"]
     a = result["a"]
     b = result["b"]
-    x_range = np.linspace(x_solution - 5, x_solution + 5, 100)
-    y_values = a * x_range + b
+    x_range = lineaire_build_plot_range(x_solution - 5, x_solution + 5)
+    y_values = [a * x_value + b for x_value in x_range]
 
     fig, ax = plt.subplots(figsize=(8, 4.6))
     theme = apply_matplotlib_theme(fig, ax)
@@ -219,6 +228,7 @@ def lineaire_set_input_values(a, b, y):
 
 def lineaire_show_panel(panel_name):
     show_tab_panel(panel_name, LINEAIRE_PANEL_CONFIGS)
+    sync_history_clear_button("lineaire-vergelijking-clear-history", panel_name == "history")
 
 
 def lineaire_normalize_history_entry(entry):
@@ -318,12 +328,20 @@ def lineaire_on_theme_change(_event):
         lineaire_render_result(LINEAIRE_LAST_RESULT)
 
 
+def lineaire_set_clear_history_disabled(disabled):
+    clear_button = get("lineaire-vergelijking-clear-history")
+    if clear_button:
+        clear_button.disabled = bool(disabled)
+
+
 async def lineaire_sync_history_view():
-    return await sync_tool_history_view(
+    history_entries = await sync_tool_history_view(
         LINEAIRE_TOOL_INDEX,
         lineaire_normalize_history_entry,
         lineaire_render_history_entries,
     )
+    lineaire_set_clear_history_disabled(not history_entries)
+    return history_entries
 
 
 async def lineaire_restore_history_entry(history_index):
@@ -347,6 +365,13 @@ async def lineaire_delete_history_entry(history_index):
     await delete_tool_history_and_refresh(
         LINEAIRE_TOOL_INDEX,
         history_index,
+        lineaire_sync_history_view,
+    )
+
+
+async def lineaire_clear_history():
+    await clear_tool_history_and_refresh(
+        LINEAIRE_TOOL_INDEX,
         lineaire_sync_history_view,
     )
 
@@ -395,6 +420,11 @@ def lineaire_tool_tab_click(_event):
 async def lineaire_history_tab_click(_event):
     await lineaire_sync_history_view()
     lineaire_show_panel("history")
+
+
+@when("click", "#lineaire-vergelijking-clear-history")
+async def lineaire_clear_history_click(_event):
+    await lineaire_clear_history()
 
 
 @when("click", "#lineaire-vergelijking-reset")

@@ -2,7 +2,6 @@ import asyncio
 from html import escape
 
 import matplotlib.pyplot as plt  # ty:ignore[unresolved-import]
-import numpy as np  # ty:ignore[unresolved-import]
 from pyscript import when, window
 
 from lib import (
@@ -10,6 +9,7 @@ from lib import (
     append_tool_history,
     apply_matplotlib_theme,
     clear_matplotlib_target,
+    clear_tool_history_and_refresh,
     delete_tool_history_and_refresh,
     dispatch_history_click,
     display_matplotlib_figure,
@@ -25,6 +25,7 @@ from lib import (
     render_summary_card,
     set_element_value,
     show_tab_panel,
+    sync_history_clear_button,
     sync_tool_history_view,
 )
 
@@ -356,11 +357,15 @@ def cijfer_render_result(result=None, error=None):
         summary_cards.append(goal_card)
 
     result_container.innerHTML = f"""
-        <div class="space-y-4">
-            <div
-                id="{CIJFER_CHART_TARGET_ID}"
-                class="flex min-h-80 items-center justify-center overflow-hidden [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:object-contain"
-            ></div>
+        <div class="flex h-full flex-col gap-4">
+            <article class="card gap-0 p-0">
+                <section class="p-2">
+                    <div
+                        id="{CIJFER_CHART_TARGET_ID}"
+                        class="flex min-h-80 items-center justify-center overflow-hidden [&_canvas]:size-full [&_canvas]:max-w-full [&_img]:block [&_img]:size-full [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_svg]:size-full [&_svg]:max-w-full"
+                    ></div>
+                </section>
+            </article>
             <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-2 xl:[&:has(>article:nth-child(3):last-child)]:grid-cols-3">
                 {"".join(summary_cards)}
             </div>
@@ -369,7 +374,7 @@ def cijfer_render_result(result=None, error=None):
 
     cijfer_clear_plot_output()
 
-    x_positions = np.arange(1, count + 1)
+    x_positions = list(range(1, count + 1))
     fig, ax = plt.subplots(figsize=(8, 4.6))
     theme = apply_matplotlib_theme(fig, ax)
     chart_colors = theme["chart_colors"]
@@ -444,6 +449,7 @@ def cijfer_set_form_values(grades, goal=None, focus_index=None):
 
 def cijfer_show_panel(panel_name):
     show_tab_panel(panel_name, CIJFER_PANEL_CONFIGS)
+    sync_history_clear_button("cijfer-calculator-clear-history", panel_name == "history")
 
 
 def cijfer_normalize_history_entry(entry):
@@ -635,12 +641,20 @@ def cijfer_on_theme_change(_event):
         cijfer_render_result(CIJFER_LAST_RESULT)
 
 
+def cijfer_set_clear_history_disabled(disabled):
+    clear_button = get("cijfer-calculator-clear-history")
+    if clear_button:
+        clear_button.disabled = bool(disabled)
+
+
 async def cijfer_sync_history_view():
-    return await sync_tool_history_view(
+    history_entries = await sync_tool_history_view(
         CIJFER_TOOL_INDEX,
         cijfer_normalize_history_entry,
         cijfer_render_history_entries,
     )
+    cijfer_set_clear_history_disabled(not history_entries)
+    return history_entries
 
 
 async def cijfer_restore_history_entry(history_index):
@@ -658,6 +672,13 @@ async def cijfer_delete_history_entry(history_index):
     await delete_tool_history_and_refresh(
         CIJFER_TOOL_INDEX,
         history_index,
+        cijfer_sync_history_view,
+    )
+
+
+async def cijfer_clear_history():
+    await clear_tool_history_and_refresh(
+        CIJFER_TOOL_INDEX,
         cijfer_sync_history_view,
     )
 
@@ -700,6 +721,11 @@ def cijfer_tool_tab_click(_event):
 async def cijfer_history_tab_click(_event):
     await cijfer_sync_history_view()
     cijfer_show_panel("history")
+
+
+@when("click", "#cijfer-calculator-clear-history")
+async def cijfer_clear_history_click(_event):
+    await cijfer_clear_history()
 
 
 @when("click", "#cijfer-calculator-reset")

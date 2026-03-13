@@ -186,6 +186,48 @@ def show_tab_panel(panel_name, panel_pairs):
             panel.hidden = not is_active
 
 
+def sync_history_clear_button(button_id, is_history_panel):
+    clear_button = get(button_id)
+    if not clear_button:
+        return
+
+    hidden_classes = ("invisible", "opacity-0", "scale-95", "pointer-events-none")
+    visible_classes = ("visible", "opacity-100", "scale-100", "pointer-events-auto")
+    motion_classes = (
+        "motion-safe:motion-preset-pop",
+        "motion-safe:motion-opacity-in-0",
+        "motion-safe:motion-scale-in-95",
+        "motion-safe:motion-duration-250",
+    )
+
+    if not is_history_panel:
+        for class_name in motion_classes:
+            clear_button.classList.remove(class_name)
+        for class_name in hidden_classes:
+            clear_button.classList.add(class_name)
+        for class_name in visible_classes:
+            clear_button.classList.remove(class_name)
+        clear_button.ariaHidden = "true"
+        return
+
+    for class_name in hidden_classes:
+        clear_button.classList.remove(class_name)
+    for class_name in visible_classes:
+        clear_button.classList.add(class_name)
+    clear_button.ariaHidden = "false"
+
+    for class_name in motion_classes:
+        clear_button.classList.remove(class_name)
+
+    _ = clear_button.offsetWidth
+
+    def apply_motion_classes():
+        for class_name in motion_classes:
+            clear_button.classList.add(class_name)
+
+    window.requestAnimationFrame(create_proxy(lambda _ts: apply_motion_classes()))
+
+
 def sanitize_history_entries(history_entries, normalize_entry):
     sanitized_entries = []
     changed = False
@@ -236,6 +278,11 @@ async def sync_tool_history_view(tool_index, normalize_entry, render_entries):
 
 async def delete_tool_history_and_refresh(tool_index, history_index, sync_view):
     await delete_tool_history_entry(tool_index, history_index)
+    await sync_view()
+
+
+async def clear_tool_history_and_refresh(tool_index, sync_view):
+    await set_tool_history(tool_index, [])
     await sync_view()
 
 

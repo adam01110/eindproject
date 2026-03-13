@@ -8,6 +8,7 @@ from lib import (
     append_tool_history,
     apply_matplotlib_theme,
     clear_matplotlib_target,
+    clear_tool_history_and_refresh,
     delete_tool_history_and_refresh,
     dispatch_history_click,
     display_matplotlib_figure,
@@ -21,6 +22,7 @@ from lib import (
     set_element_value,
     set_text_content,
     show_tab_panel,
+    sync_history_clear_button,
     sync_tool_history_view,
 )
 
@@ -596,6 +598,7 @@ def percentage_reset_inputs():
 
 def percentage_show_panel(panel_name):
     show_tab_panel(panel_name, PERCENTAGE_PANEL_CONFIGS)
+    sync_history_clear_button("percentage-calculator-clear-history", panel_name == "history")
 
 
 def percentage_normalize_history_entry(entry):
@@ -744,12 +747,20 @@ def percentage_on_theme_change(_event):
         percentage_render_result(PERCENTAGE_LAST_RESULT)
 
 
+def percentage_set_clear_history_disabled(disabled):
+    clear_button = get("percentage-calculator-clear-history")
+    if clear_button:
+        clear_button.disabled = bool(disabled)
+
+
 async def percentage_sync_history_view():
-    return await sync_tool_history_view(
+    history_entries = await sync_tool_history_view(
         PERCENTAGE_TOOL_INDEX,
         percentage_normalize_history_entry,
         percentage_render_history_entries,
     )
+    percentage_set_clear_history_disabled(not history_entries)
+    return history_entries
 
 
 async def percentage_restore_history_entry(history_index):
@@ -772,6 +783,13 @@ async def percentage_delete_history_entry(history_index):
     await delete_tool_history_and_refresh(
         PERCENTAGE_TOOL_INDEX,
         history_index,
+        percentage_sync_history_view,
+    )
+
+
+async def percentage_clear_history():
+    await clear_tool_history_and_refresh(
+        PERCENTAGE_TOOL_INDEX,
         percentage_sync_history_view,
     )
 
@@ -817,6 +835,11 @@ def percentage_tool_tab_click(_event):
 async def percentage_history_tab_click(_event):
     await percentage_sync_history_view()
     percentage_show_panel("history")
+
+
+@when("click", "#percentage-calculator-clear-history")
+async def percentage_clear_history_click(_event):
+    await percentage_clear_history()
 
 
 @when("click", "#percentage-calculator-reset")
